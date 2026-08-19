@@ -1,0 +1,104 @@
+package desk.help.infra.persistence.adapters;
+
+import desk.help.core.domains.UserDomain;
+import desk.help.core.enums.Role;
+import desk.help.core.gateway.UserGateway;
+import desk.help.infra.mappers.UserMapper;
+import desk.help.infra.persistence.repos.JpaUserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class UserAdapter implements UserGateway {
+
+    private final JpaUserRepository repository;
+
+    @Override
+    public UserDomain save(UserDomain domain) {
+        var entity = UserMapper.toJpaEntity(domain);
+        var savedEntity = repository.save(entity);
+        return UserMapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public boolean existsById(UUID uuid) {
+        return repository.existsById(uuid);
+    }
+
+    @Override
+    public List<UserDomain> findAll() {
+        return repository.findAll().stream()
+                .map(UserMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public Optional<UserDomain> findById(UUID uuid) {
+        return repository.findById(uuid).map(UserMapper::toDomain);
+    }
+
+    @Override
+    public UserDomain deactivateById(UUID uuid) {
+        Optional<UserDomain> userOpt = findById(uuid);
+            userOpt.ifPresent(a -> repository.deactivateById(uuid));
+            return userOpt.orElse(null);
+    }
+
+    @Override
+    public boolean existsByEmailIgnoreCase(String email) {
+        return repository.existsByEmailIgnoreCase(email);
+    }
+
+    @Override
+    public boolean existsByIdNotAndEmailIgnoreCase(UUID uuid, String email) {
+        return repository.existsByIdNotAndEmailIgnoreCase(uuid, email);
+    }
+
+    @Override
+    public boolean existsByIdAndActiveFalse(UUID uuid) {
+        return repository.existsByIdAndIsActiveFalse(uuid);
+    }
+
+    @Override
+    public boolean existsByIdAndActiveTrue(UUID uuid) {
+        return repository.existsByIdAndIsActiveTrue(uuid);
+    }
+
+    @Override
+    public boolean existsByIdNotAndRole(UUID uuid, Role role) {
+        return repository.existsByIdNotAndRole(uuid, role);
+    }
+
+    @Override
+    public List<UserDomain> findAllByActiveTrue() {
+        return repository.findAllByIsActiveTrue().stream()
+                .map(UserMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public Optional<UserDomain> findByIdAndActiveTrue(UUID uuid) {
+        return repository.findByIdAndIsActiveTrue(uuid).map(UserMapper::toDomain);
+    }
+
+    @Override
+    public Optional<UserDomain> findByEmail(String email) {
+        return repository.findByEmail(email).map(UserMapper::toDomain);
+    }
+
+    public boolean existsByRole(Role role) {
+        return repository.existsByRole(role);
+    }
+
+    public List<UserDomain> findAllByRole(Role role) {
+        return repository.findAllByRole(role).stream()
+                .map(UserMapper::toDomain)
+                .toList();
+    }
+
+}
