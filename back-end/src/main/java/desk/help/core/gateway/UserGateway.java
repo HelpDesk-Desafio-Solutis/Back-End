@@ -20,8 +20,12 @@ public interface UserGateway {
     boolean existsByIdAndActiveTrue(UUID uuid);
     boolean existsByIdNotAndRole(UUID uuid, Role role);
     List<UserDomain> findAllByActiveTrue();
+    List<UserDomain> findAllByActiveTrueAndRole(Role role);
     Optional<UserDomain> findByIdAndActiveTrue(UUID uuid);
     Optional<UserDomain> findByEmail(String email);
 
 
+    boolean existsByRole(Role role);
+
+    List<UserDomain> findAllByRole(Role role);
 }

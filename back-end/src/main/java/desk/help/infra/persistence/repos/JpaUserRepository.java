@@ -18,6 +18,7 @@ public interface JpaUserRepository extends JpaRepository<UserJpaEntity, UUID> {
     boolean existsByIdAndIsActiveTrue(UUID uuid);
     UserJpaEntity deactivateById(UUID uuid);
     List<UserJpaEntity> findAllByIsActiveTrue();
+    List<UserJpaEntity> findAllByIsActiveTrueAndRole(Role role);
     Optional<UserJpaEntity> findByIdAndIsActiveTrue(UUID uuid);
     Optional<UserJpaEntity> findByEmail(String email);
     boolean existsByRole(Role role);

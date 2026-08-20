@@ -1,4 +1,4 @@
 package desk.help.core.enums;
 
-public enum Logs {
+public enum AuditActions {
 }

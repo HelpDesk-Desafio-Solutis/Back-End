@@ -82,6 +82,13 @@ public class UserAdapter implements UserGateway {
     }
 
     @Override
+    public List<UserDomain> findAllByActiveTrueAndRole(Role role) {
+        return repository.findAllByIsActiveTrueAndRole(role).stream()
+                .map(UserMapper::toDomain)
+                .toList();
+    }
+
+    @Override
     public Optional<UserDomain> findByIdAndActiveTrue(UUID uuid) {
         return repository.findByIdAndIsActiveTrue(uuid).map(UserMapper::toDomain);
     }
@@ -91,10 +98,12 @@ public class UserAdapter implements UserGateway {
         return repository.findByEmail(email).map(UserMapper::toDomain);
     }
 
+    @Override
     public boolean existsByRole(Role role) {
         return repository.existsByRole(role);
     }
 
+    @Override
     public List<UserDomain> findAllByRole(Role role) {
         return repository.findAllByRole(role).stream()
                 .map(UserMapper::toDomain)
