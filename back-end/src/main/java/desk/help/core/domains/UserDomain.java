@@ -13,15 +13,17 @@ public class UserDomain {
     private LocalDateTime updatedAt;
     private String name;
     private String email;
+    private String password;
     private Role role;
 
-    public UserDomain(UUID uuid, Boolean active, LocalDateTime createdAt, LocalDateTime updatedAt, String name, String email, Role role) {
+    public UserDomain(UUID uuid, Boolean active, LocalDateTime createdAt, LocalDateTime updatedAt, String name, String email, String password, Role role) {
         this.uuid = uuid;
         this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.name = name;
         this.email = email;
+        this.password = password;
         this.role = role;
     }
 
@@ -88,4 +90,11 @@ public class UserDomain {
         this.role = role;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
