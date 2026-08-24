@@ -1,4 +1,4 @@
-package desk.help.infra.config.auth;
+package desk.help.infra.config.openapi;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
