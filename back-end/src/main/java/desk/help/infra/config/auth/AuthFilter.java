@@ -1,6 +1,7 @@
 package desk.help.infra.config.auth;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,6 +44,12 @@ public class AuthFilter extends OncePerRequestFilter {
                 username = tokenJwtManager.getUsernameFromToken(jwtToken);
             } catch (ExpiredJwtException exception) {
                 LOGGER.info("[FALHA NA AUTENTICAÇÃO] - Token expirado, usuário: {} - {}", exception.getClaims().getSubject(), exception.getMessage());
+
+                LOGGER.trace("[FALHA NA AUTENTICAÇÃO] - Stacktrace: %s", exception);
+
+                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            } catch (JwtException exception) {
+                LOGGER.info("[FALHA NA AUTENTICAÇÃO] - Token inválido, usuário: {}", exception.getMessage());
 
                 LOGGER.trace("[FALHA NA AUTENTICAÇÃO] - Stacktrace: %s", exception);
 
