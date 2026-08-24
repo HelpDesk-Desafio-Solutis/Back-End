@@ -3,6 +3,9 @@ package desk.help.infra.persistence.repos;
 import desk.help.core.enums.Role;
 import desk.help.infra.persistence.entity.UserJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,16 +16,18 @@ import java.util.UUID;
 public interface JpaUserRepository extends JpaRepository<UserJpaEntity, UUID> {
 
     boolean existsByEmailIgnoreCase(String email);
-    boolean existsByIdNotAndEmailIgnoreCase(UUID uuid, String email);
-    boolean existsByIdAndIsActiveFalse(UUID uuid);
-    boolean existsByIdAndIsActiveTrue(UUID uuid);
-    UserJpaEntity deactivateById(UUID uuid);
+    boolean existsByUuidNotAndEmailIgnoreCase(UUID uuid, String email);
+    boolean existsByUuidAndIsActiveFalse(UUID uuid);
+    boolean existsByUuidAndIsActiveTrue(UUID uuid);
+    @Modifying
+    @Query("UPDATE UserJpaEntity u SET u.isActive = false WHERE u.uuid = :uuid")
+    void deactivateByUuid(@Param("uuid") UUID uuid);
     List<UserJpaEntity> findAllByIsActiveTrue();
     List<UserJpaEntity> findAllByIsActiveTrueAndRole(Role role);
-    Optional<UserJpaEntity> findByIdAndIsActiveTrue(UUID uuid);
+    Optional<UserJpaEntity> findByUuidAndIsActiveTrue(UUID uuid);
     Optional<UserJpaEntity> findByEmail(String email);
     boolean existsByRole(Role role);
-    boolean existsByIdNotAndRole(UUID uuid, Role role);
+    boolean existsByUuidNotAndRole(UUID uuid, Role role);
     List<UserJpaEntity> findAllByRole(Role role);
 
 }
