@@ -3,6 +3,7 @@ package desk.help.infra.config.auth;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -50,12 +51,14 @@ public class SecurityConfig {
 
                         // Rotas públicas
                         .requestMatchers(
-                                "/auth/**",
+                                "/auth/login",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
-                                "/webjars/**",
-                                "/users"
+                                "/webjars/**"
+                        ).permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/users"
                         ).permitAll()
 
                         // Admin

@@ -56,7 +56,7 @@ public class JwtService {
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration));
 
         if (uuid != null) {
-            builder.claim("uuid", uuid.toString());
+            builder.claim("uuid", String.class);
         }
 
         return builder.signWith(secretKey).compact();

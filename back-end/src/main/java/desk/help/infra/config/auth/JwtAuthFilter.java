@@ -33,7 +33,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
             ) throws ServletException, IOException {
         // Ignora rotas públicas
-        if (req.getServletPath().contains("/auth/")) {
+        if (req.getServletPath().contains("/auth/login")) {
             filterChain.doFilter(req, res);
             return;
         }

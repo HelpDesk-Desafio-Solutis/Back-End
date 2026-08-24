@@ -32,7 +32,7 @@ public class AuthService implements UserDetailsService {
     }
 
     public UserTokenDto autenticar(UserLoginDto loginDto, AuthenticationManager manager) {
-        UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getSenha());
+        UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
 
         Authentication auth = manager.authenticate(credentials);
         SecurityContextHolder.getContext().setAuthentication(auth);
