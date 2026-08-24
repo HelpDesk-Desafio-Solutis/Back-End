@@ -20,8 +20,10 @@ public class UserRequestDto {
     @NotBlank(message = "Insira um e-mail")
     private String email;
 
-    @Positive(message = "Cargo inválido")
-    @NotNull(message = "Insira o cargo do usuário")
+    @Size(min = 6)
+    @NotBlank(message = "Insira a senha")
+    private String password;
+
     private Role role;
 
 }

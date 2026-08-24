@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -48,14 +50,17 @@ public class SecurityConfig {
 
                         // Rotas públicas
                         .requestMatchers(
-                                "/auth/**"
+                                "/auth/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/users"
                         ).permitAll()
 
                         // Admin
                         .requestMatchers("/admin/**")
-                        .hasRole(
-                                "ADMIN"
-                        )
+                        .hasRole("ADMIN")
 
                         // Usuários autenticados
                         .requestMatchers("/tickets/**")
@@ -64,6 +69,7 @@ public class SecurityConfig {
                                 "ADMIN",
                                 "TECHNICIAN"
                         )
+
                         .anyRequest().authenticated()
                 )
 
@@ -125,4 +131,12 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config
+    ) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
 }

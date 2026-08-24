@@ -26,6 +26,7 @@ public class UserJpaEntity {
     private LocalDateTime updatedAt;
     private String name;
     private String email;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;

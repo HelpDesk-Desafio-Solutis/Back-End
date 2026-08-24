@@ -1,6 +1,7 @@
 package desk.help.infra.di;
 
 import desk.help.core.app.usecases.user.*;
+import desk.help.core.gateway.PasswordEncoderGateway;
 import desk.help.core.gateway.UserGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 public class UserConfig {
 
     @Bean
-    public CreateUserUseCase createUserUseCase(UserGateway gateway) {
-        return new CreateUserUseCase(gateway);
+    public CreateUserUseCase createUserUseCase(UserGateway userGateway, PasswordEncoderGateway encoderGateway) {
+        return new CreateUserUseCase(userGateway, encoderGateway);
     }
 
     @Bean
