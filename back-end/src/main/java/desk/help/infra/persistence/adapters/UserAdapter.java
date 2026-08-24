@@ -45,7 +45,7 @@ public class UserAdapter implements UserGateway {
     @Override
     public UserDomain deactivateById(UUID uuid) {
         Optional<UserDomain> userOpt = findById(uuid);
-            userOpt.ifPresent(a -> repository.deactivateById(uuid));
+            userOpt.ifPresent(a -> repository.deactivateByUuid(uuid));
             return userOpt.orElse(null);
     }
 
@@ -56,22 +56,22 @@ public class UserAdapter implements UserGateway {
 
     @Override
     public boolean existsByIdNotAndEmailIgnoreCase(UUID uuid, String email) {
-        return repository.existsByIdNotAndEmailIgnoreCase(uuid, email);
+        return repository.existsByUuidNotAndEmailIgnoreCase(uuid, email);
     }
 
     @Override
     public boolean existsByIdAndActiveFalse(UUID uuid) {
-        return repository.existsByIdAndIsActiveFalse(uuid);
+        return repository.existsByUuidAndIsActiveFalse(uuid);
     }
 
     @Override
     public boolean existsByIdAndActiveTrue(UUID uuid) {
-        return repository.existsByIdAndIsActiveTrue(uuid);
+        return repository.existsByUuidAndIsActiveTrue(uuid);
     }
 
     @Override
     public boolean existsByIdNotAndRole(UUID uuid, Role role) {
-        return repository.existsByIdNotAndRole(uuid, role);
+        return repository.existsByUuidNotAndRole(uuid, role);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class UserAdapter implements UserGateway {
 
     @Override
     public Optional<UserDomain> findByIdAndActiveTrue(UUID uuid) {
-        return repository.findByIdAndIsActiveTrue(uuid).map(UserMapper::toDomain);
+        return repository.findByUuidAndIsActiveTrue(uuid).map(UserMapper::toDomain);
     }
 
     @Override

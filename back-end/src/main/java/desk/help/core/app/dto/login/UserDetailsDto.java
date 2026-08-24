@@ -26,17 +26,19 @@ public class UserDetailsDto implements UserDetails {
         this.uuid = user.getUuid();
         this.nome = user.getName();
         this.email = user.getEmail();
-        this.senha = "";
+        this.senha = user.getPassword();
         this.role = user.getRole();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (role == null) {
-            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+            return List.of();
         }
 
-        return List.of(new SimpleGrantedAuthority("Role_" + role.name()));
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + role.name())
+        );
     }
 
     @Override
@@ -46,6 +48,11 @@ public class UserDetailsDto implements UserDetails {
 
     public String getRole() {
         return role != null ? role.name() : null;
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
     }
 
     @Override
@@ -68,9 +75,5 @@ public class UserDetailsDto implements UserDetails {
         return true;
     }
 
-    @Override
-    public String getPassword() {
-        return "";
-    }
 
 }
