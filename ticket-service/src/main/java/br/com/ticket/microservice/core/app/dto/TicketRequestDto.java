@@ -4,7 +4,6 @@ import br.com.ticket.microservice.core.enums.Category;
 import br.com.ticket.microservice.core.enums.Priority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -28,11 +27,9 @@ public class TicketRequestDto {
     private Category category;
     private Priority priority;
 
-    @Positive(message = "ID inválido para Cliente")
     @NotNull(message = "Preencha com o ID do Cliente")
     private UUID clientUuid;
 
-    @Positive(message = "ID inválido para Técnico")
     @NotNull(message = "Preencha com o ID do Técnico")
     private UUID technicianUuid;
 }

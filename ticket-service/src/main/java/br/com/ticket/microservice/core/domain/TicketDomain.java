@@ -3,7 +3,6 @@ package br.com.ticket.microservice.core.domain;
 import br.com.ticket.microservice.core.enums.Category;
 import br.com.ticket.microservice.core.enums.Priority;
 import br.com.ticket.microservice.core.enums.Status;
-import br.com.user.microservice.core.domain.UserDomain;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

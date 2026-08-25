@@ -3,7 +3,6 @@ package br.com.ticket.microservice.infra.persistence.entity;
 import br.com.ticket.microservice.core.enums.Category;
 import br.com.ticket.microservice.core.enums.Priority;
 import br.com.ticket.microservice.core.enums.Status;
-import br.com.user.microservice.infra.persistence.entity.UserJpaEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;

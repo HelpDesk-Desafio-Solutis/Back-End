@@ -2,8 +2,9 @@ package br.com.ticket.microservice.core.app.usecases;
 
 import br.com.shared.exceptions.exceptionClass.RelatedEntityNotFoundException;
 import br.com.ticket.microservice.core.domain.TicketDomain;
+import br.com.ticket.microservice.core.domain.UserDomain;
 import br.com.ticket.microservice.core.gateway.TicketGateway;
-import br.com.user.microservice.core.gateway.UserGateway;
+import br.com.ticket.microservice.core.gateway.UserGateway;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.time.LocalDateTime;
@@ -26,17 +27,18 @@ public class UpdateTicketByIdUseCase {
             );
         }
 
-        if (!userGateway.existsByIdAndActiveTrue(ticket.getClientDomain().getUuid())) {
-            throw new RelatedEntityNotFoundException(
-                    "O cliente com o ID " + ticket.getClientDomain().getUuid() + " não foi encontrado ou está inativo."
-            );
-        }
+        UserDomain client = userGateway.findById(ticket.getClientDomain().getUuid())
+                .orElseThrow(() -> new RelatedEntityNotFoundException(
+                        "O cliente com o ID " + ticket.getClientDomain().getUuid() + " não foi encontrado ou está inativo."
+                ));
 
-        if (!userGateway.existsByIdAndActiveTrue(ticket.getTechnicianDomain().getUuid())) {
-            throw new RelatedEntityNotFoundException(
-                    "O técnico com o ID " + ticket.getTechnicianDomain().getUuid() + " não foi encontrado ou está inativo."
-            );
-        }
+        UserDomain technician = userGateway.findById(ticket.getTechnicianDomain().getUuid())
+                .orElseThrow(() -> new RelatedEntityNotFoundException(
+                        "O técnico com o ID " + ticket.getTechnicianDomain().getUuid() + " não foi encontrado ou está inativo."
+                ));
+
+        ticket.setClientDomain(client);
+        ticket.setTechnicianDomain(technician);
 
         ticket.setUuid(uuid);
         ticket.setCreatedAt(ticketGateway.findById(uuid).get().getCreatedAt());

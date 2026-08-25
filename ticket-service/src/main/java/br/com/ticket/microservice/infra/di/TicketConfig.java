@@ -2,9 +2,8 @@ package br.com.ticket.microservice.infra.di;
 
 import br.com.ticket.microservice.core.app.usecases.*;
 import br.com.ticket.microservice.core.gateway.TicketGateway;
-import br.com.user.microservice.core.gateway.UserGateway;
-import br.com.user.microservice.infra.persistence.adapter.UserAdapter;
-import br.com.user.microservice.infra.persistence.repo.JpaUserRepository;
+import br.com.ticket.microservice.core.gateway.UserGateway;
+import br.com.ticket.microservice.infra.persistence.adapter.UserServiceAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,8 +41,8 @@ public class TicketConfig {
     }
 
     @Bean
-    public UserGateway userGateway(JpaUserRepository userRepository) {
-        return new UserAdapter(userRepository);
+    public UserGateway userGateway(UserServiceAdapter userServiceAdapter) {
+        return userServiceAdapter;
     }
 
 }

@@ -32,12 +32,6 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>br.com.user</groupId>
-			<artifactId>microservice</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
 			<groupId>br.com.exception</groupId>
 			<artifactId>shared</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

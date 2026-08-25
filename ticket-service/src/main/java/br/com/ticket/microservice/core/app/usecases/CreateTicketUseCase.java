@@ -2,9 +2,9 @@ package br.com.ticket.microservice.core.app.usecases;
 
 import br.com.shared.exceptions.exceptionClass.RelatedEntityNotFoundException;
 import br.com.ticket.microservice.core.domain.TicketDomain;
+import br.com.ticket.microservice.core.domain.UserDomain;
 import br.com.ticket.microservice.core.gateway.TicketGateway;
-import br.com.user.microservice.core.domain.UserDomain;
-import br.com.user.microservice.core.gateway.UserGateway;
+import br.com.ticket.microservice.core.gateway.UserGateway;
 
 import java.time.LocalDateTime;
 

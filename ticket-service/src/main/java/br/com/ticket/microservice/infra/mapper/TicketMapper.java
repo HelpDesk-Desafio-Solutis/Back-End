@@ -3,10 +3,11 @@ package br.com.ticket.microservice.infra.mapper;
 import br.com.ticket.microservice.core.app.dto.TicketRequestDto;
 import br.com.ticket.microservice.core.app.dto.TicketResponseDto;
 import br.com.ticket.microservice.core.app.dto.TicketResumedResponseDto;
+import br.com.ticket.microservice.core.app.dto.user.UserResponseDto;
 import br.com.ticket.microservice.core.domain.TicketDomain;
+import br.com.ticket.microservice.core.domain.UserDomain;
 import br.com.ticket.microservice.core.enums.Status;
 import br.com.ticket.microservice.infra.persistence.entity.TicketJpaEntity;
-import br.com.user.microservice.infra.mapper.UserMapper;
 
 public class TicketMapper {
 
@@ -23,8 +24,8 @@ public class TicketMapper {
         ticket.setPriority(req.getPriority());
         ticket.setStatus(Status.OPEN);
 
-        ticket.setClientDomain(UserMapper.toDomain(req.getClientUuid()));
-        ticket.setTechnicianDomain(UserMapper.toDomain(req.getTechnicianUuid()));
+        ticket.setClientDomain(new UserDomain(req.getClientUuid()));
+        ticket.setTechnicianDomain(new UserDomain(req.getTechnicianUuid()));
 
         return ticket;
     }
@@ -40,8 +41,8 @@ public class TicketMapper {
                 .status(ticket.getStatus())
                 .category(ticket.getCategory())
                 .priority(ticket.getPriority())
-                .client(UserMapper.toResponseDto(ticket.getClientDomain()))
-                .technician(UserMapper.toResponseDto(ticket.getTechnicianDomain()))
+                .client(toResponseDto(ticket.getClientDomain()))
+                .technician(toResponseDto(ticket.getTechnicianDomain()))
                 .createdAt(ticket.getCreatedAt())
                 .updatedAt(ticket.getUpdatedAt())
                 .build();
@@ -56,8 +57,8 @@ public class TicketMapper {
                 .title(ticket.getTitle())
                 .category(ticket.getCategory())
                 .priority(ticket.getPriority())
-                .client(UserMapper.toResponseDto(ticket.getClientDomain()))
-                .technician(UserMapper.toResponseDto(ticket.getTechnicianDomain()))
+                .client(toResponseDto(ticket.getClientDomain()))
+                .technician(toResponseDto(ticket.getTechnicianDomain()))
                 .build();
     }
 
@@ -73,8 +74,8 @@ public class TicketMapper {
         jpa.setCategory(ticket.getCategory());
         jpa.setPriority(ticket.getPriority());
 
-        jpa.setClientUuid(UserMapper.toJpaEntitySimple(ticket.getClientDomain()).getUuid());
-        jpa.setTechnicianUuid(UserMapper.toJpaEntitySimple(ticket.getTechnicianDomain()).getUuid());
+        jpa.setClientUuid(ticket.getClientDomain().getUuid());
+        jpa.setTechnicianUuid(ticket.getTechnicianDomain().getUuid());
 
         jpa.setCreatedAt(ticket.getCreatedAt());
         jpa.setUpdatedAt(ticket.getUpdatedAt());
@@ -94,13 +95,26 @@ public class TicketMapper {
         ticket.setCategory(jpa.getCategory());
         ticket.setPriority(jpa.getPriority());
 
-        ticket.setClientDomain(UserMapper.toDomain(jpa.getClientUuid()));
-        ticket.setTechnicianDomain(UserMapper.toDomain(jpa.getTechnicianUuid()));
+        ticket.setClientDomain(new UserDomain(jpa.getClientUuid()));
+        ticket.setTechnicianDomain(new UserDomain(jpa.getTechnicianUuid()));
 
         ticket.setCreatedAt(jpa.getCreatedAt());
         ticket.setUpdatedAt(jpa.getUpdatedAt());
 
         return ticket;
+    }
+
+    private static UserResponseDto toResponseDto(UserDomain user) {
+        if (user == null) {
+            return null;
+        }
+
+        return UserResponseDto.builder()
+                .uuid(user.getUuid())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .build();
     }
 
 }
