@@ -1,0 +1,24 @@
+package br.com.user.microservice.infra.config.auth;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+@Component
+public class AuthEntryPoint implements AuthenticationEntryPoint {
+    @Override
+    public void commence(HttpServletRequest req, HttpServletResponse res, AuthenticationException authException) throws IOException, ServletException {
+        if(authException.getClass().equals(BadCredentialsException.class) || authException.getClass().equals(InsufficientAuthenticationException.class)) {
+            res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        } else {
+            res.sendError(HttpServletResponse.SC_FORBIDDEN);
+        }
+    }
+}
