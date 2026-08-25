@@ -101,7 +101,7 @@ public class UserAdapter implements UserGateway {
     @Override
     public boolean existsByRole(Role role) {
         return repository.existsByRole(role);
-    }
+    }       
 
     @Override
     public List<UserDomain> findAllByRole(Role role) {
