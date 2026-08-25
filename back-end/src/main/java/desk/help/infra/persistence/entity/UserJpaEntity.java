@@ -21,6 +21,7 @@ public class UserJpaEntity {
     @GeneratedValue
     @UuidGenerator
     private UUID uuid;
+
     private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
