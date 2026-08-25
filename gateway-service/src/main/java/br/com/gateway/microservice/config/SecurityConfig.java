@@ -1,6 +1,6 @@
-package br.com.user.microservice.infra.config.auth;
+package br.com.gateway.microservice.config;
 
-import br.com.user.microservice.infra.config.auth.JwtAuthFilter;
+import br.com.gateway.microservice.filters.JwtAuthGatewayFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -29,10 +28,10 @@ public class SecurityConfig {
     @Value("${web-endpoint.url}")
     private String webEndpoint;
 
-    private final JwtAuthFilter jwtAuthFilter;
+    private final JwtAuthGatewayFilter jwtAuthGatewayFilter;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
+    public SecurityConfig(JwtAuthGatewayFilter jwtAuthGatewayFilter) {
+        this.jwtAuthGatewayFilter = jwtAuthGatewayFilter;
     }
 
     @Bean
@@ -100,7 +99,7 @@ public class SecurityConfig {
                 );
 
         http.addFilterBefore(
-                jwtAuthFilter,
+                jwtAuthGatewayFilter,
                 UsernamePasswordAuthenticationFilter.class
         );
 
@@ -111,13 +110,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
-        List<String> allowedOrigins = Arrays.stream(webEndpoint.split(","))
-                .map(String::trim)
-                .filter(origin -> !origin.isEmpty())
-                .toList();
 
         config.setAllowedOrigins(
-                allowedOrigins
+                Arrays.asList(webEndpoint)
         );
 
         config.setAllowCredentials(true);

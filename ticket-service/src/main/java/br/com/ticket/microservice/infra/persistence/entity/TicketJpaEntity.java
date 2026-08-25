@@ -39,12 +39,10 @@ public class TicketJpaEntity {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_client")
-    private UserJpaEntity client;
+    @JoinColumn(name = "client_id", nullable = false)
+    private UUID clientUuid;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_technician")
-    private UserJpaEntity technician;
+    @JoinColumn(name = "technician_id")
+    private UUID technicianUuid;
 
 }

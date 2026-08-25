@@ -73,8 +73,8 @@ public class TicketMapper {
         jpa.setCategory(ticket.getCategory());
         jpa.setPriority(ticket.getPriority());
 
-        jpa.setClient(UserMapper.toJpaEntitySimple(ticket.getClientDomain()));
-        jpa.setTechnician(UserMapper.toJpaEntitySimple(ticket.getTechnicianDomain()));
+        jpa.setClientUuid(UserMapper.toJpaEntitySimple(ticket.getClientDomain()).getUuid());
+        jpa.setTechnicianUuid(UserMapper.toJpaEntitySimple(ticket.getTechnicianDomain()).getUuid());
 
         jpa.setCreatedAt(ticket.getCreatedAt());
         jpa.setUpdatedAt(ticket.getUpdatedAt());
@@ -94,8 +94,8 @@ public class TicketMapper {
         ticket.setCategory(jpa.getCategory());
         ticket.setPriority(jpa.getPriority());
 
-        ticket.setClientDomain(UserMapper.toDomain(jpa.getClient()));
-        ticket.setTechnicianDomain(UserMapper.toDomain(jpa.getTechnician()));
+        ticket.setClientDomain(UserMapper.toDomain(jpa.getClientUuid()));
+        ticket.setTechnicianDomain(UserMapper.toDomain(jpa.getTechnicianUuid()));
 
         ticket.setCreatedAt(jpa.getCreatedAt());
         ticket.setUpdatedAt(jpa.getUpdatedAt());

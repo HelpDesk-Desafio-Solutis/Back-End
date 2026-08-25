@@ -32,6 +32,12 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+			<version>2.8.13</version>
+		</dependency>
+
+		<dependency>
 			<groupId>br.com.exception</groupId>
 			<artifactId>shared</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

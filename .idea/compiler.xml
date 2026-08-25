@@ -2,27 +2,30 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Annotation profile for back-end" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
-        </processorPath>
-        <module name="back-end" />
-      </profile>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="microservice (1) (br.com.gateway)" />
+        <module name="shared" />
+        <module name="microservice (1) (br.com.ticket)" />
         <module name="microservice" />
+        <module name="microservice (1) (br.com.notification)" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="back-end" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="back-end" options="-parameters" />
       <module name="microservice" options="-parameters" />
+      <module name="microservice (1) (br.com.gateway)" options="-parameters" />
+      <module name="microservice (1) (br.com.notification)" options="-parameters" />
+      <module name="microservice (1) (br.com.ticket)" options="-parameters" />
+      <module name="shared" options="-parameters" />
     </option>
   </component>
 </project>
