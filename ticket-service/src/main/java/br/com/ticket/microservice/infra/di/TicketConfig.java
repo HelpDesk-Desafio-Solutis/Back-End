@@ -1,6 +1,7 @@
 package br.com.ticket.microservice.infra.di;
 
 import br.com.ticket.microservice.core.app.usecases.*;
+import br.com.ticket.microservice.core.gateway.NotificationGateway;
 import br.com.ticket.microservice.core.gateway.TicketGateway;
 import br.com.ticket.microservice.core.gateway.UserGateway;
 import br.com.ticket.microservice.infra.persistence.adapter.UserServiceAdapter;
@@ -11,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 public class TicketConfig {
 
     @Bean
-    public CreateTicketUseCase createTicketUseCase(TicketGateway ticketGateway, UserGateway userGateway) {
-        return new CreateTicketUseCase(ticketGateway, userGateway);
+    public CreateTicketUseCase createTicketUseCase(TicketGateway ticketGateway, UserGateway userGateway, NotificationGateway notificationGateway) {
+        return new CreateTicketUseCase(ticketGateway, userGateway, notificationGateway);
     }
 
     @Bean

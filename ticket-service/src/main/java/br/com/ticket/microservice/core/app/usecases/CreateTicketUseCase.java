@@ -1,8 +1,10 @@
 package br.com.ticket.microservice.core.app.usecases;
 
+import br.com.shared.events.TicketCreatedEvent;
 import br.com.shared.exceptions.exceptionClass.RelatedEntityNotFoundException;
 import br.com.ticket.microservice.core.domain.TicketDomain;
 import br.com.ticket.microservice.core.domain.UserDomain;
+import br.com.ticket.microservice.core.gateway.NotificationGateway;
 import br.com.ticket.microservice.core.gateway.TicketGateway;
 import br.com.ticket.microservice.core.gateway.UserGateway;
 
@@ -12,10 +14,12 @@ public class CreateTicketUseCase {
 
     private final TicketGateway ticketGateway;
     private final UserGateway userGateway;
+    private final NotificationGateway notificationGateway;
 
-    public CreateTicketUseCase(TicketGateway ticketGateway, UserGateway userGateway) {
+    public CreateTicketUseCase(TicketGateway ticketGateway, UserGateway userGateway, NotificationGateway notificationGateway) {
         this.ticketGateway = ticketGateway;
         this.userGateway = userGateway;
+        this.notificationGateway = notificationGateway;
     }
 
     public TicketDomain execute(TicketDomain ticket) throws Exception {
@@ -36,6 +40,8 @@ public class CreateTicketUseCase {
         ticket.setUpdatedAt(LocalDateTime.now());
 
         TicketDomain savedTicket = ticketGateway.save(ticket);
+
+        notificationGateway.sendTicketCreated(savedTicket);
 
         return savedTicket;
     }
