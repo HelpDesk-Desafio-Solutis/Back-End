@@ -1,5 +1,6 @@
 package br.com.notification.microservice.infra.service;
 
+import br.com.shared.events.TicketAssignedEvent;
 import br.com.shared.events.TicketCreatedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -35,4 +36,28 @@ public class EMailService {
                         + event.email()
         );
     }
+
+    public void enviarEmailAtribuicao(TicketAssignedEvent event) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(event.email());
+        message.setSubject("Atribuicao de Ticket");
+
+        message.setText(
+                "Olá,\n\n" +
+                        "Você foi atribuido a um ticket.\n\n" +
+                        "Começe a trabalhar no ticket o mais rápido possível.\n\n" +
+                        "Atenciosamente,\n" +
+                        "Equipe de Suporte"
+        );
+
+        sender.send(message);
+
+        System.out.println(
+                "📤 E-mail de atribuição enviado para: "
+                        + event.email()
+        );
+    }
+
 }

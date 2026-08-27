@@ -1,6 +1,7 @@
 package br.com.notification.microservice.infra.persistence.entity;
 
 import br.com.notification.microservice.core.enums.Status;
+import br.com.notification.microservice.core.enums.Type;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -25,8 +26,11 @@ public class NotificationJpaEntity {
     @JoinColumn(name = "ticket_id", nullable = false)
     private UUID ticketUuid;
 
-    @JoinColumn(name = "user_id", nullable = false)
-    private UUID userUuid;
+    @Column(name = "client_id", nullable = false)
+    private UUID clientUuid;
+
+    @Column(name = "technician_id")
+    private UUID technicianUuid;
 
     private String email;
     private String message;
@@ -34,5 +38,8 @@ public class NotificationJpaEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
 }

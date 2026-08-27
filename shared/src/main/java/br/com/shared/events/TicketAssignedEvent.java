@@ -2,10 +2,10 @@ package br.com.shared.events;
 
 import java.util.UUID;
 
-public record TicketCreatedEvent(
+public record TicketAssignedEvent(
         UUID ticketId,
         UUID clientId,
-        UUID technicianUuid,
+        UUID technicianId,
         String email,
         String message
 ) {

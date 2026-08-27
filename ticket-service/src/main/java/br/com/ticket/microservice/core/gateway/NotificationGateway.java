@@ -6,4 +6,6 @@ public interface NotificationGateway {
 
     void sendTicketCreated(TicketDomain domain);
 
+    void sendTicketAssigned(TicketDomain domain);
+
 }

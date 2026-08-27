@@ -55,6 +55,7 @@ public class CreateTicketUseCase {
         savedTicket.setTechnicianDomain(ticket.getTechnicianDomain());
 
         notificationGateway.sendTicketCreated(savedTicket);
+        notificationGateway.sendTicketAssigned(savedTicket);
 
         return savedTicket;
     }

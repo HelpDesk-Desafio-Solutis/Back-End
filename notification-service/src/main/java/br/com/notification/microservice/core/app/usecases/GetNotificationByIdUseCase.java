@@ -34,7 +34,7 @@ public class GetNotificationByIdUseCase {
         NotificationDomain notification = notificationOptional.get();
 
         UserResponseDto user =
-                userGateway.findById(notification.getUserUuid(), authorizationHeader);
+                userGateway.findById(notification.getClientUuid(), authorizationHeader);
 
         NotificationResponseDto response =
                 new NotificationResponseDto(

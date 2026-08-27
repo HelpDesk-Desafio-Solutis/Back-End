@@ -1,6 +1,7 @@
 package br.com.notification.microservice.core.domain;
 
 import br.com.notification.microservice.core.enums.Status;
+import br.com.notification.microservice.core.enums.Type;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,10 +10,12 @@ public class NotificationDomain {
 
     private UUID uuid;
     private UUID ticketUuid;
-    private UUID userUuid;
+    private UUID clientUuid;
+    private UUID technicianUuid;
     private String email;
     private String message;
     private Status status;
+    private Type type;
     private LocalDateTime createdAt;
 
     public NotificationDomain() {
@@ -21,18 +24,22 @@ public class NotificationDomain {
     public NotificationDomain(
             UUID uuid,
             UUID ticketUuid,
-            UUID userUuid,
+            UUID clientUuid,
+            UUID technicianUuid,
             String email,
             String message,
             Status status,
+            Type type,
             LocalDateTime createdAt
     ) {
         this.uuid = uuid;
         this.ticketUuid = ticketUuid;
-        this.userUuid = userUuid;
+        this.clientUuid = clientUuid;
+        this.technicianUuid = technicianUuid;
         this.email = email;
         this.message = message;
         this.status = status;
+        this.type = type;
         this.createdAt = createdAt;
     }
 
@@ -52,12 +59,20 @@ public class NotificationDomain {
         this.ticketUuid = ticketUuid;
     }
 
-    public UUID getUserUuid() {
-        return userUuid;
+    public UUID getClientUuid() {
+        return clientUuid;
     }
 
-    public void setUserUuid(UUID userUuid) {
-        this.userUuid = userUuid;
+    public void setClientUuid(UUID clientUuid) {
+        this.clientUuid = clientUuid;
+    }
+
+    public UUID getTechnicianUuid() {
+        return technicianUuid;
+    }
+
+    public void setTechnicianUuid(UUID technicianUuid) {
+        this.technicianUuid = technicianUuid;
     }
 
     public String getEmail() {
@@ -82,6 +97,14 @@ public class NotificationDomain {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public LocalDateTime getCreatedAt() {
