@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS helpdesk_user;
+
+CREATE DATABASE IF NOT EXISTS helpdesk_ticket;
