@@ -15,6 +15,10 @@ public class RabbitNotificationAdapter implements NotificationGateway {
 
     @Override
     public void sendTicketCreated(TicketDomain domain) {
+        if (domain.getClientDomain() == null) {
+            throw new IllegalArgumentException("Não é possível enviar notificação de ticket criado sem o cliente associado.");
+        }
+
         TicketCreatedEvent event = new TicketCreatedEvent(
                 domain.getUuid(),
                 domain.getClientDomain().getUuid(),

@@ -26,12 +26,22 @@ public class CreateTicketUseCase {
         if (ticket.getClientDomain() != null && ticket.getClientDomain().getUuid() != null) {
             UserDomain client = userGateway.findById(ticket.getClientDomain().getUuid())
                     .orElseThrow(() -> new RelatedEntityNotFoundException("Cliente com o ID " + ticket.getClientDomain().getUuid() + " não encontrado."));
+
+            System.out.println("CLIENTE APÓS BUSCA NO USER-SERVICE:");
+            System.out.println("UUID: " + client.getUuid());
+            System.out.println("EMAIL: " + client.getEmail());
+
             ticket.setClientDomain(client);
         }
 
         if (ticket.getTechnicianDomain() != null && ticket.getTechnicianDomain().getUuid() != null) {
             UserDomain technician = userGateway.findById(ticket.getTechnicianDomain().getUuid())
                     .orElseThrow(() -> new RelatedEntityNotFoundException("Técnico com o ID " + ticket.getTechnicianDomain().getUuid() + " não encontrado."));
+
+            System.out.println("TÉCNICO APÓS BUSCA NO USER-SERVICE:");
+            System.out.println("UUID: " + technician.getUuid());
+            System.out.println("EMAIL: " + technician.getEmail());
+
             ticket.setTechnicianDomain(technician);
         }
 
@@ -40,6 +50,9 @@ public class CreateTicketUseCase {
         ticket.setUpdatedAt(LocalDateTime.now());
 
         TicketDomain savedTicket = ticketGateway.save(ticket);
+
+        savedTicket.setClientDomain(ticket.getClientDomain());
+        savedTicket.setTechnicianDomain(ticket.getTechnicianDomain());
 
         notificationGateway.sendTicketCreated(savedTicket);
 

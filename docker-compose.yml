@@ -1,0 +1,38 @@
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: helpdesk-rabbitmq
+
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+
+    restart: always
+
+
+  mysql:
+    image: mysql:8.0
+    container_name: helpdesk-mysql
+
+    ports:
+      - "3306:3306"
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: helpdesk
+      MYSQL_PASSWORD: helpdesk
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+
+    restart: always
+
+
+volumes:
+  mysql_data:
