@@ -58,7 +58,7 @@ public class OpenApiConfig {
                                 .url("http://localhost:8082")
                                 .description("Ticket Service"),
                         new Server()
-                                .url("http://localhost:8083")
+                                .url("http://localhost:8080")
                                 .description("Notification Service")
                 );
         }
