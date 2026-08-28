@@ -53,6 +53,14 @@ public class UserServiceAdapter implements UserGateway {
 
             UserResponseDto body = response.getBody();
 
+            System.out.println("====================================");
+            System.out.println("RESPOSTA DO USER SERVICE:");
+            System.out.println("UUID: " + body.getUuid());
+            System.out.println("NAME: " + body.getName());
+            System.out.println("EMAIL: " + body.getEmail());
+            System.out.println("ROLE: " + body.getRole());
+            System.out.println("====================================");
+
             if (body == null) {
                 return Optional.empty();
             }

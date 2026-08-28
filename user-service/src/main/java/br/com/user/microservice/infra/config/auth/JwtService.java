@@ -70,6 +70,23 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public UUID extractUuid(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new JwtException("Token ausente");
+        }
+
+        String uuidString = extractClaim(token, claims -> claims.get("uuid", String.class));
+        if (uuidString == null) {
+            throw new JwtException("UUID não encontrado no token");
+        }
+
+        try {
+            return UUID.fromString(uuidString);
+        } catch (IllegalArgumentException e) {
+            throw new JwtException("UUID inválido no token");
+        }
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);

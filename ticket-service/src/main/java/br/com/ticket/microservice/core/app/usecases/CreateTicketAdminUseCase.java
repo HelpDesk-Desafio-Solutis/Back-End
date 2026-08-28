@@ -29,8 +29,6 @@ public class CreateTicketAdminUseCase {
 
 
     public TicketDomain execute(TicketDomain ticket, String authorization) {
-
-
         UserDomain client =
                 userGateway.findById(
                         ticket.getClientDomain().getUuid(),
@@ -66,9 +64,13 @@ public class CreateTicketAdminUseCase {
         TicketDomain saved =
                 ticketGateway.save(ticket);
 
+        saved.setClientDomain(client);
+        saved.setTechnicianDomain(technician);
 
         notificationGateway.sendTicketCreated(saved);
-        notificationGateway.sendTicketAssigned(saved);
+        if (saved.getTechnicianDomain() != null) {
+            notificationGateway.sendTicketAssigned(saved);
+        }
 
 
         return saved;

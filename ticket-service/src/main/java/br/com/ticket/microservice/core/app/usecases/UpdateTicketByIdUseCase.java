@@ -29,19 +29,12 @@ public class UpdateTicketByIdUseCase {
     }
 
     public TicketDomain execute(TicketDomain ticket, UUID uuid, String authorization) {
-
-        System.out.println(
-                "UpdateTicketByIdUseCase.execute - Ticket UUID: "
-                        + uuid
-        );
-
         TicketDomain existingTicket = ticketGateway.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "O ticket com o ID " + uuid + " não foi encontrado."
                 ));
 
         Status oldStatus = existingTicket.getStatus();
-
 
         UserDomain existingClient = userGateway.findById(
                         existingTicket.getClientDomain().getUuid(), authorization
@@ -50,12 +43,10 @@ public class UpdateTicketByIdUseCase {
                         "Cliente não encontrado."
                 ));
 
-
         UserDomain existingTechnician = null;
 
         if(existingTicket.getTechnicianDomain() != null
                 && existingTicket.getTechnicianDomain().getUuid() != null){
-
             existingTechnician = userGateway.findById(
                             existingTicket.getTechnicianDomain().getUuid(), authorization
                     )
@@ -64,74 +55,23 @@ public class UpdateTicketByIdUseCase {
                     ));
         }
 
-
         existingTicket.setClientDomain(existingClient);
         existingTicket.setTechnicianDomain(existingTechnician);
+        existingTicket.setTitle(ticket.getTitle() != null ? ticket.getTitle() : existingTicket.getTitle());
+        existingTicket.setDescription(ticket.getDescription() != null ? ticket.getDescription() : existingTicket.getDescription());
+        existingTicket.setCategory(ticket.getCategory() != null ? ticket.getCategory() : existingTicket.getCategory());
+        existingTicket.setPriority(ticket.getPriority() != null ? ticket.getPriority() : existingTicket.getPriority());
+        existingTicket.setStatus(ticket.getStatus() != null ? ticket.getStatus() : existingTicket.getStatus());
+        existingTicket.setUpdatedAt(LocalDateTime.now());
 
+        TicketDomain saved = ticketGateway.save(existingTicket);
 
-        System.out.println(
-                "UpdateTicketByIdUseCase.execute - Existing Ticket: "
-                        + existingTicket.getUuid()
-        );
-
-        System.out.println(
-                "UpdateTicketByIdUseCase.execute - Existing Title: "
-                        + existingTicket.getTitle()
-        );
-
-
-        existingTicket.setTitle(
-                ticket.getTitle() != null
-                        ? ticket.getTitle()
-                        : existingTicket.getTitle()
-        );
-
-
-        existingTicket.setDescription(
-                ticket.getDescription() != null
-                        ? ticket.getDescription()
-                        : existingTicket.getDescription()
-        );
-
-
-        existingTicket.setCategory(
-                ticket.getCategory() != null
-                        ? ticket.getCategory()
-                        : existingTicket.getCategory()
-        );
-
-
-        existingTicket.setPriority(
-                ticket.getPriority() != null
-                        ? ticket.getPriority()
-                        : existingTicket.getPriority()
-        );
-
-
-        existingTicket.setStatus(
-                ticket.getStatus() != null
-                        ? ticket.getStatus()
-                        : existingTicket.getStatus()
-        );
-
-
-        existingTicket.setUpdatedAt(
-                LocalDateTime.now()
-        );
-
-
-        TicketDomain saved =
-                ticketGateway.save(existingTicket);
-
+        saved.setClientDomain(existingClient);
+        saved.setTechnicianDomain(existingTechnician);
 
         if(oldStatus != saved.getStatus()){
-
-            notificationGateway.sendTicketStatusChanged(
-                    saved,
-                    oldStatus
-            );
+            notificationGateway.sendTicketStatusChanged(saved, oldStatus);
         }
-
 
         return saved;
     }

@@ -40,12 +40,6 @@ public class RabbitNotificationAdapter implements NotificationGateway {
             );
         }
 
-        if(domain.getTechnicianDomain() == null){
-            throw new IllegalArgumentException(
-                    "Ticket sem técnico associado."
-            );
-        }
-
         TicketAssignedEvent event = new TicketAssignedEvent(
                         domain.getUuid(),
                         domain.getClientDomain().getUuid(),

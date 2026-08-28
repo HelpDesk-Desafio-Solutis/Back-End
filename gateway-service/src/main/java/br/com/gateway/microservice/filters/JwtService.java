@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -42,6 +43,23 @@ public class JwtService {
 
     public String extractRole(String token) {
         return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
+    public UUID extractUuid(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new JwtException("Token ausente");
+        }
+
+        String uuidString = extractClaim(token, claims -> claims.get("uuid", String.class));
+        if (uuidString == null) {
+            throw new JwtException("UUID não encontrado no token");
+        }
+
+        try {
+            return UUID.fromString(uuidString);
+        } catch (IllegalArgumentException e) {
+            throw new JwtException("UUID inválido no token");
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

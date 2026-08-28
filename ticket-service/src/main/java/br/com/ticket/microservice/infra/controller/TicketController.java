@@ -41,22 +41,20 @@ public class TicketController {
     private final GetTicketByIdUseCase getTicketByIdUseCase;
     private final UpdateTicketByIdUseCase updateTicketByIdUseCase;
 
-    @SecurityRequirement(name = "Bearer")
     @PostMapping
     @Operation(summary = "Cria um novo ticket.", description = "Cria um novo ticket com base nas informações fornecidas.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Ticket criado com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketResponseDto.class), examples = @ExampleObject(value = ErrorResponseExamples.CREATED))),
             @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.BAD_REQUEST)))
     })
-    public ResponseEntity<TicketResponseDto> createTicket(@RequestHeader("Authorization") String authorization, @Valid @RequestBody TicketRequestDto requestDto)
+    public ResponseEntity<TicketResponseDto> createTicket(@RequestHeader("Authorization") String authorization, @RequestHeader("X-User-UUID") UUID userUuid, @Valid @RequestBody TicketRequestDto requestDto)
         throws Exception {
             TicketDomain ticket = TicketMapper.toDomain(requestDto);
-            TicketDomain createdTicket = createTicketUseCase.execute(ticket, authorization);
+            TicketDomain createdTicket = createTicketUseCase.execute(ticket, authorization, userUuid);
 
             return new ResponseEntity<>(TicketMapper.toResponseDto(createdTicket), HttpStatus.CREATED);
     }
 
-    @SecurityRequirement(name = "Bearer")
     @PostMapping("/admin")
     @Operation(summary = "Cria um novo ticket como administrador.", description = "Cria um novo ticket com base nas informações fornecidas, incluindo a possibilidade de atribuir um técnico.")
     @ApiResponses(value = {
@@ -70,7 +68,6 @@ public class TicketController {
         return new ResponseEntity<>(TicketMapper.toResponseDto(createdTicket), HttpStatus.CREATED);
     }
 
-    @SecurityRequirement(name = "Bearer")
     @GetMapping
     @Operation(summary = "Obtém todos os tickets ticket pelo Status.", description = "Retorna os detalhes de todos os tickets com base no status fornecido.")
     @ApiResponses(value = {
@@ -98,7 +95,6 @@ public class TicketController {
         return ResponseEntity.ok(ticketDtos);
     }
 
-    @SecurityRequirement(name = "Bearer")
     @GetMapping("/{id}")
     @Operation(summary = "Obtém um ticket pelo ID.", description = "Retorna os detalhes de um ticket específico com base no ID fornecido.")
     @ApiResponses(value = {
@@ -112,7 +108,6 @@ public class TicketController {
         return ResponseEntity.ok(TicketMapper.toResponseDto(ticket));
     }
 
-    @SecurityRequirement(name = "Bearer")
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza um ticket pelo ID.", description = "Atualiza as informações de um ticket específico com base no ID fornecido.")
     @ApiResponses(value = {
@@ -129,7 +124,6 @@ public class TicketController {
         return ResponseEntity.ok(TicketMapper.toResumedResponseDto(updatedTicket));
     }
 
-    @SecurityRequirement(name = "Bearer")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Desativa um ticket pelo ID.", description = "Desativa um ticket específico com base no ID fornecido.")
@@ -143,7 +137,6 @@ public class TicketController {
         deactivateTicketByIdUseCase.execute(id);
     }
 
-    @SecurityRequirement(name = "Bearer")
     @GetMapping("/client/{id}")
     @Operation(summary = "Obtém todos os tickets de um cliente.", description = "Retorna uma lista de tickets associados a um cliente específico com base no ID fornecido.")
     @ApiResponses(value = {

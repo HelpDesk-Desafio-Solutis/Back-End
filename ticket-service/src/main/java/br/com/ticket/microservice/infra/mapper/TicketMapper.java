@@ -101,7 +101,7 @@ public class TicketMapper {
         jpa.setPriority(ticket.getPriority());
 
         jpa.setClientUuid(ticket.getClientDomain().getUuid());
-        jpa.setTechnicianUuid(ticket.getTechnicianDomain().getUuid());
+        jpa.setTechnicianUuid(ticket.getTechnicianDomain() != null ? ticket.getTechnicianDomain().getUuid() : null);
 
         jpa.setCreatedAt(ticket.getCreatedAt());
         jpa.setUpdatedAt(ticket.getUpdatedAt());
