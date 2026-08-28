@@ -7,17 +7,30 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="microservice (1) (br.com.gateway)" />
         <module name="shared" />
         <module name="microservice (1) (br.com.ticket)" />
         <module name="microservice" />
         <module name="microservice (1) (br.com.notification)" />
         <module name="microservice (1) (br.com.user)" />
+      </profile>
+      <profile name="Annotation profile for back-end-parent" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
+        </processorPath>
+        <module name="microservice (4) (br.com.user)" />
+        <module name="microservice (1) (br.com.gateway)" />
+        <module name="microservice (3) (br.com.ticket)" />
         <module name="microservice (2) (br.com.notification)" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="back-end" target="21" />
+      <module name="microservice" target="21" />
+      <module name="microservice (1) (br.com.user)" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -29,6 +42,8 @@
       <module name="microservice (1) (br.com.ticket)" options="-parameters" />
       <module name="microservice (1) (br.com.user)" options="-parameters" />
       <module name="microservice (2) (br.com.notification)" options="-parameters" />
+      <module name="microservice (3) (br.com.ticket)" options="-parameters" />
+      <module name="microservice (4) (br.com.user)" options="-parameters" />
       <module name="shared" options="-parameters" />
     </option>
   </component>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://apache.org" xmlns:xsi="http://w3.org"
+         xsi:schemaLocation="http://apache.org https://apache.org">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>br.com.main</groupId>
+    <artifactId>back-end-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>shared</module>
+        <module>user-service</module>
+        <module>ticket-service</module>
+        <module>notification-service</module>
+        <module>gateway-service</module>
+    </modules>
+</project>

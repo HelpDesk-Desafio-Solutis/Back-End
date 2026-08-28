@@ -1,38 +1,182 @@
 services:
+  mysql-user:
+    image: mysql:8.0
+    container_name: helpdesk-mysql-user
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: helpdesk_user
+      MYSQL_USER: helpdesk
+      MYSQL_PASSWORD: helpdesk
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_user_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  mysql-ticket:
+    image: mysql:8.0
+    container_name: helpdesk-mysql-ticket
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: helpdesk_ticket
+      MYSQL_USER: helpdesk
+      MYSQL_PASSWORD: helpdesk
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_ticket_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  mysql-notification:
+    image: mysql:8.0
+    container_name: helpdesk-mysql-notification
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: helpdesk_notification
+      MYSQL_USER: helpdesk
+      MYSQL_PASSWORD: helpdesk
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql_notification_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: helpdesk-rabbitmq
-
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
-
-    restart: always
-
-
-  mysql:
-    image: mysql:8.0
-    container_name: helpdesk-mysql
-
     ports:
-      - "3306:3306"
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
 
+  mailhog:
+    image: mailhog/mailhog
+    container_name: helpdesk-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: user-service
+    container_name: helpdesk-user-service
+    ports:
+      - "8081:8081"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: helpdesk
-      MYSQL_PASSWORD: helpdesk
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-user:3306/helpdesk_user
+      SPRING_DATASOURCE_USERNAME: helpdesk
+      SPRING_DATASOURCE_PASSWORD: helpdesk
+    depends_on:
+      mysql-user:
+        condition: service_started
+    restart: unless-stopped
 
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d
+  ticket-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ticket-service
+    container_name: helpdesk-ticket-service
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: 8082
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-ticket:3306/helpdesk_ticket
+      SPRING_DATASOURCE_USERNAME: helpdesk
+      SPRING_DATASOURCE_PASSWORD: helpdesk
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
+      USER_SERVICE_BASE_URL: http://user-service:8081
+    depends_on:
+      mysql-ticket:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      user-service:
+        condition: service_started
+    restart: unless-stopped
 
-    restart: always
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: notification-service
+    container_name: helpdesk-notification-service
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-notification:3306/helpdesk_notification
+      SPRING_DATASOURCE_USERNAME: helpdesk
+      SPRING_DATASOURCE_PASSWORD: helpdesk
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
+      USER_SERVICE_URL: http://user-service:8081
+      SPRING_MAIL_HOST: mailhog
+      SPRING_MAIL_PORT: 1025
+    depends_on:
+      mysql-notification:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      user-service:
+        condition: service_started
+      mailhog:
+        condition: service_started
+    restart: unless-stopped
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gateway-service
+    container_name: helpdesk-gateway-service
+    ports:
+      - "8089:8089"
+    environment:
+      SERVER_PORT: 8089
+    depends_on:
+      user-service:
+        condition: service_started
+      ticket-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+    restart: unless-stopped
 
 
 volumes:
-  mysql_data:
+  mysql_user_data:
+  mysql_ticket_data:
+  mysql_notification_data:
