@@ -2,6 +2,7 @@ package br.com.notification.microservice.infra.service;
 
 import br.com.shared.events.TicketAssignedEvent;
 import br.com.shared.events.TicketCreatedEvent;
+import br.com.shared.events.TicketStatusChangedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,7 +15,6 @@ public class EMailService {
     private JavaMailSender sender;
 
     public void enviarEmailConfirmacao(TicketCreatedEvent event) {
-
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(event.email());
@@ -38,7 +38,6 @@ public class EMailService {
     }
 
     public void enviarEmailAtribuicao(TicketAssignedEvent event) {
-
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(event.email());
@@ -56,6 +55,21 @@ public class EMailService {
 
         System.out.println(
                 "📤 E-mail de atribuição enviado para: "
+                        + event.email()
+        );
+    }
+
+    public void enviarEmailStatusChanged(TicketStatusChangedEvent event){
+        SimpleMailMessage mail = new SimpleMailMessage();
+
+        mail.setTo(event.email());
+        mail.setSubject("Atualização do ticket");
+        mail.setText("O ticket " + event.ticketId() + " teve seu status alterado de " + event.oldStatus() + " para " + event.newStatus());
+
+        sender.send(mail);
+
+        System.out.println(
+                "📤 E-mail de alteração de status enviado para: "
                         + event.email()
         );
     }

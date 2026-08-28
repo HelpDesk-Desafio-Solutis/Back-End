@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface UserGateway {
 
-    Optional<UserDomain> findById(UUID uuid);
+    Optional<UserDomain> findById(UUID uuid, String authorization);
+
 }

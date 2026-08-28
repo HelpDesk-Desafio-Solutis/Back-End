@@ -22,9 +22,9 @@ public class CreateTicketUseCase {
         this.notificationGateway = notificationGateway;
     }
 
-    public TicketDomain execute(TicketDomain ticket) throws Exception {
+    public TicketDomain execute(TicketDomain ticket, String authorization) throws Exception {
         if (ticket.getClientDomain() != null && ticket.getClientDomain().getUuid() != null) {
-            UserDomain client = userGateway.findById(ticket.getClientDomain().getUuid())
+            UserDomain client = userGateway.findById(ticket.getClientDomain().getUuid(), authorization)
                     .orElseThrow(() -> new RelatedEntityNotFoundException("Cliente com o ID " + ticket.getClientDomain().getUuid() + " não encontrado."));
 
             System.out.println("CLIENTE APÓS BUSCA NO USER-SERVICE:");
@@ -35,7 +35,7 @@ public class CreateTicketUseCase {
         }
 
         if (ticket.getTechnicianDomain() != null && ticket.getTechnicianDomain().getUuid() != null) {
-            UserDomain technician = userGateway.findById(ticket.getTechnicianDomain().getUuid())
+            UserDomain technician = userGateway.findById(ticket.getTechnicianDomain().getUuid(), authorization)
                     .orElseThrow(() -> new RelatedEntityNotFoundException("Técnico com o ID " + ticket.getTechnicianDomain().getUuid() + " não encontrado."));
 
             System.out.println("TÉCNICO APÓS BUSCA NO USER-SERVICE:");

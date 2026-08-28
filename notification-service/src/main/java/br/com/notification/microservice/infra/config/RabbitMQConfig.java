@@ -14,10 +14,13 @@ public class RabbitMQConfig {
 
     public static final String ASSIGNED_QUEUE = "notification.assigned.queue";
 
+    public static final String STATUS_CHANGED_QUEUE = "notification.status.changed.queue";
+
     public static final String CREATED_ROUTING_KEY = "ticket.created";
 
     public static final String ASSIGNED_ROUTING_KEY = "ticket.assigned";
 
+    public static final String STATUS_CHANGED_ROUTING_KEY = "ticket.status.changed";
 
     @Bean
     public TopicExchange exchange() {
@@ -58,6 +61,23 @@ public class RabbitMQConfig {
                 .bind(assignedQueue)
                 .to(exchange)
                 .with(ASSIGNED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue statusChangedQueue() {
+        return new Queue(STATUS_CHANGED_QUEUE);
+    }
+
+    @Bean
+    public Binding statusChangedBinding(
+            Queue statusChangedQueue,
+            TopicExchange exchange
+    ) {
+
+        return BindingBuilder
+                .bind(statusChangedQueue)
+                .to(exchange)
+                .with(STATUS_CHANGED_ROUTING_KEY);
     }
 
 }

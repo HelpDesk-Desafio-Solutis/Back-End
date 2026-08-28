@@ -1,8 +1,6 @@
 package br.com.ticket.microservice.infra.mapper;
 
-import br.com.ticket.microservice.core.app.dto.TicketRequestDto;
-import br.com.ticket.microservice.core.app.dto.TicketResponseDto;
-import br.com.ticket.microservice.core.app.dto.TicketResumedResponseDto;
+import br.com.ticket.microservice.core.app.dto.*;
 import br.com.ticket.microservice.core.app.dto.user.UserResponseDto;
 import br.com.ticket.microservice.core.domain.TicketDomain;
 import br.com.ticket.microservice.core.domain.UserDomain;
@@ -24,9 +22,6 @@ public class TicketMapper {
         ticket.setPriority(req.getPriority());
         ticket.setStatus(Status.OPEN);
 
-        ticket.setClientDomain(new UserDomain(req.getClientUuid()));
-        ticket.setTechnicianDomain(new UserDomain(req.getTechnicianUuid()));
-
         return ticket;
     }
 
@@ -46,6 +41,37 @@ public class TicketMapper {
                 .createdAt(ticket.getCreatedAt())
                 .updatedAt(ticket.getUpdatedAt())
                 .build();
+    }
+
+    public static TicketDomain toDomain(TicketAdminRequestDto adminDto) {
+        if(adminDto == null) return null;
+
+        TicketDomain ticket = new TicketDomain();
+
+        ticket.setTitle(adminDto.getTitle());
+        ticket.setDescription(adminDto.getDescription());
+        ticket.setCategory(adminDto.getCategory());
+        ticket.setPriority(adminDto.getPriority());
+        ticket.setStatus(Status.OPEN);
+        ticket.setClientDomain(new UserDomain(adminDto.getClientUuid()));
+
+        if(adminDto.getTechnicianUuid() != null){
+            ticket.setTechnicianDomain(new UserDomain(adminDto.getTechnicianUuid()));
+        }
+
+        return ticket;
+    }
+
+    public static TicketDomain toDomain(TicketUpdateDto updateDto) {
+        if (updateDto == null) return null;
+
+        TicketDomain ticket = new TicketDomain();
+
+        ticket.setStatus(updateDto.getStatus());
+        ticket.setPriority(updateDto.getPriority());
+        ticket.setTechnicianDomain(new UserDomain(updateDto.getTechnicianUuid()));
+
+        return ticket;
     }
 
     /* ========= DOMAIN -> DTO (Resumo) ========= */

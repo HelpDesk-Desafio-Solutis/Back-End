@@ -17,6 +17,11 @@ public class TicketConfig {
     }
 
     @Bean
+    public CreateTicketAdminUseCase createTicketAdminUseCase(TicketGateway ticketGateway, UserGateway userGateway, NotificationGateway notificationGateway) {
+        return new CreateTicketAdminUseCase(ticketGateway, userGateway, notificationGateway);
+    }
+
+    @Bean
     public DeactivateTicketByIdUseCase deactivateTicketByIdUseCase(TicketGateway ticketGateway) {
         return new DeactivateTicketByIdUseCase(ticketGateway);
     }
@@ -32,13 +37,13 @@ public class TicketConfig {
     }
 
     @Bean
-    public UpdateTicketByIdUseCase updateTicketByIdUseCase(TicketGateway ticketGateway, UserGateway userGateway) {
-        return new UpdateTicketByIdUseCase(ticketGateway, userGateway);
+    public UpdateTicketByIdUseCase updateTicketByIdUseCase(TicketGateway ticketGateway, UserGateway userGateway, NotificationGateway notificationGateway) {
+        return new UpdateTicketByIdUseCase(ticketGateway, userGateway, notificationGateway);
     }
 
     @Bean
-    public GetTicketByIdUseCase getTicketByIdUseCase(TicketGateway ticketGateway) {
-        return new GetTicketByIdUseCase(ticketGateway);
+    public GetTicketByIdUseCase getTicketByIdUseCase(TicketGateway ticketGateway, UserGateway userGateway) {
+        return new GetTicketByIdUseCase(ticketGateway, userGateway);
     }
 
     @Bean

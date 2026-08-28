@@ -62,6 +62,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/users"
                         ).permitAll()
 
+                        // Criação administrativa de tickets
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/tickets/admin"
+                        )
+                        .hasAnyRole(
+                                "ADMIN",
+                                "TECHNICIAN"
+                        )
+
                         // Admin
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")

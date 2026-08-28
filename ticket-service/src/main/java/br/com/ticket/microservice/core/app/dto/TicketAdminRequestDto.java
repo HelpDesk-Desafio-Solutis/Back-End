@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TicketRequestDto {
+public class TicketAdminRequestDto {
 
     @Size(max = 80, message = "Título muito longo")
     @NotBlank(message = "Insira o título do chamado")
@@ -26,5 +26,10 @@ public class TicketRequestDto {
 
     private Category category;
     private Priority priority;
+
+    @NotNull(message = "Preencha com o ID do Cliente")
+    private UUID clientUuid;
+
+    private UUID technicianUuid;
 
 }
