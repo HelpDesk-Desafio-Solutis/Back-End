@@ -4,7 +4,6 @@ import br.com.user.microservice.core.app.dto.user.UserRequestDto;
 import br.com.user.microservice.core.app.usecases.*;
 import br.com.user.microservice.core.domain.UserDomain;
 import br.com.user.microservice.core.enums.Role;
-import br.com.user.microservice.infra.config.auth.JwtAuthFilter;
 import br.com.user.microservice.infra.config.auth.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
