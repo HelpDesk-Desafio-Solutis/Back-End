@@ -29,7 +29,7 @@ public class GetAllNotificationUseCase {
 
                     UserResponseDto user =
                             userGateway.findById(
-                                    notification.getUserUuid(),
+                                    notification.getClientUuid(),
                                     authorizationHeader
                             );
 

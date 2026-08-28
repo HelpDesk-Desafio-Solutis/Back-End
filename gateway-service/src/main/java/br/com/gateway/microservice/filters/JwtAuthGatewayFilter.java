@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @Component
 public class JwtAuthGatewayFilter extends OncePerRequestFilter {
@@ -52,26 +53,51 @@ public class JwtAuthGatewayFilter extends OncePerRequestFilter {
         try {
             String userEmail = jwtService.extractUsername(jwt);
             String role = jwtService.extractRole(jwt);
+            UUID userUuid = jwtService.extractUuid(jwt);
 
-            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (userEmail != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
+
                 if (jwtService.isTokenValid(jwt)) {
-                    String normalizedRole = role == null ? "" : role.trim().toUpperCase(Locale.ROOT);
+
+                    String normalizedRole = role == null
+                            ? ""
+                            : role.trim().toUpperCase(Locale.ROOT);
+
                     var authorities = normalizedRole.isEmpty()
                             ? List.<SimpleGrantedAuthority>of()
-                            : List.of(new SimpleGrantedAuthority("ROLE_" + normalizedRole));
-
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userEmail,
-                            null,
-                            authorities
+                            : List.of(
+                            new SimpleGrantedAuthority(
+                                    "ROLE_" + normalizedRole
+                            )
                     );
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userEmail,
+                                    null,
+                                    authorities
+                            );
+
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(req)
+                    );
+
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(authToken);
+
+                    req.setAttribute("userUuid", userUuid);
                 }
             }
+
         } catch (JwtException e) {
             logger.warn("Token JWT inválido: " + e.getMessage());
-            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token JWT inválido");
+            res.sendError(
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    "Token JWT inválido"
+            );
             return;
         }
 

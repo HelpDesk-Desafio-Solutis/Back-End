@@ -26,6 +26,11 @@ public class NotificationAdapter implements NotificationGateway {
         NotificationJpaEntity savedEntity =
                 repository.save(entity);
 
+        System.out.println(
+                "ENTITY CLIENT UUID: "
+                        + entity.getClientUuid()
+        );
+
         return NotificationMapper.toDomain(savedEntity);
     }
 

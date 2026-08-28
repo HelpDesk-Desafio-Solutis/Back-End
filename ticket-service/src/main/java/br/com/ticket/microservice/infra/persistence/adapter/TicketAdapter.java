@@ -64,7 +64,20 @@ public class TicketAdapter implements TicketGateway {
 
     @Override
     public Optional<TicketDomain> findById(UUID uuid) {
-        return repository.findById(uuid).map(TicketMapper::toDomain);
+
+        return repository.findById(uuid)
+                .map(entity -> {
+
+                    System.out.println("==== ENTITY DO BANCO ====");
+                    System.out.println("UUID: " + entity.getUuid());
+                    System.out.println("TITLE: " + entity.getTitle());
+                    System.out.println("DESCRIPTION: " + entity.getDescription());
+                    System.out.println("STATUS: " + entity.getStatus());
+                    System.out.println("CATEGORY: " + entity.getCategory());
+                    System.out.println("PRIORITY: " + entity.getPriority());
+
+                    return TicketMapper.toDomain(entity);
+                });
     }
 
     @Override

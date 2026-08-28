@@ -28,27 +28,52 @@ public class UserServiceAdapter implements UserGateway {
     private String userServiceBaseUrl;
 
     @Override
-    public Optional<UserDomain> findById(UUID uuid) {
+    public Optional<UserDomain> findById(UUID uuid, String authorization) {
+
+        System.out.println("AUTH RECEBIDO NO USER ADAPTER:");
+        System.out.println(authorization);
+
         try {
+            HttpHeaders headers = new HttpHeaders();
+
+            if (authorization != null && !authorization.isBlank()) {
+                headers.set(
+                        HttpHeaders.AUTHORIZATION,
+                        authorization
+                );
+            }
+
             ResponseEntity<UserResponseDto> response = restTemplate.exchange(
                     userServiceBaseUrl + "/users/{id}",
                     HttpMethod.GET,
-                    new HttpEntity<>(buildHeaders()),
+                    new HttpEntity<>(headers),
                     UserResponseDto.class,
                     uuid
             );
 
             UserResponseDto body = response.getBody();
+
+            System.out.println("====================================");
+            System.out.println("RESPOSTA DO USER SERVICE:");
+            System.out.println("UUID: " + body.getUuid());
+            System.out.println("NAME: " + body.getName());
+            System.out.println("EMAIL: " + body.getEmail());
+            System.out.println("ROLE: " + body.getRole());
+            System.out.println("====================================");
+
             if (body == null) {
                 return Optional.empty();
             }
 
             UserDomain user = new UserDomain();
+
             user.setUuid(body.getUuid());
             user.setName(body.getName());
             user.setEmail(body.getEmail());
             user.setRole(body.getRole());
+
             return Optional.of(user);
+
         } catch (HttpClientErrorException.NotFound ex) {
             return Optional.empty();
         }

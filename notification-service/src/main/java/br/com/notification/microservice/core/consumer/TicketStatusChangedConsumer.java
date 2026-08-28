@@ -5,48 +5,54 @@ import br.com.notification.microservice.core.enums.Status;
 import br.com.notification.microservice.core.enums.Type;
 import br.com.notification.microservice.core.gateway.NotificationGateway;
 import br.com.notification.microservice.infra.service.EMailService;
-import br.com.shared.events.TicketCreatedEvent;
+import br.com.shared.events.TicketStatusChangedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+
 @Component
 @RequiredArgsConstructor
-public class TicketCreatedConsumer {
+public class TicketStatusChangedConsumer {
 
     private final NotificationGateway notificationGateway;
     private final EMailService emailService;
 
-    @RabbitListener(queues = "notification.queue")
-    public void receive(TicketCreatedEvent event) {
 
-        System.out.println(
-                "Novo ticket criado: " + event.ticketId()
-        );
+    @RabbitListener(
+            queues = "notification.status.changed.queue"
+    )
+    public void receive(TicketStatusChangedEvent event) {
+        System.out.println("Status alterado do ticket: " + event.ticketId());
 
         NotificationDomain notification = new NotificationDomain();
 
         notification.setTicketUuid(event.ticketId());
         notification.setClientUuid(event.clientId());
-        notification.setTechnicianUuid(event.technicianUuid());
+        notification.setTechnicianUuid(event.technicianId());
         notification.setEmail(event.email());
         notification.setMessage(event.message());
-        notification.setCreatedAt(LocalDateTime.now());
 
         notification.setStatus(Status.PENDING);
-        notification.setType(Type.TICKET_CREATED);
+        notification.setType(Type.TICKET_STATUS_CHANGED);
 
-        NotificationDomain savedNotification = notificationGateway.save(notification);
+        notification.setCreatedAt(LocalDateTime.now());
+
+        System.out.println("OLD STATUS: " + event.oldStatus());
+        System.out.println("NEW STATUS: " + event.newStatus());
+
+        NotificationDomain saved = notificationGateway.save(notification);
+
         try {
-            emailService.enviarEmailConfirmacao(event);
-            savedNotification.setStatus(Status.SENT);
-            notificationGateway.save(savedNotification);
-        } catch (Exception e) {
-            savedNotification.setStatus(Status.FAILED);
-            notificationGateway.save(savedNotification);
-            throw e;
+            emailService.enviarEmailStatusChanged(event);
+            saved.setStatus(Status.SENT);
+        } catch(Exception e) {
+            e.printStackTrace();
+            saved.setStatus(Status.FAILED);
         }
+
+        notificationGateway.save(saved);
     }
 }

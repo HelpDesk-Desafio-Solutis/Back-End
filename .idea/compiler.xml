@@ -12,6 +12,8 @@
         <module name="microservice (1) (br.com.ticket)" />
         <module name="microservice" />
         <module name="microservice (1) (br.com.notification)" />
+        <module name="microservice (1) (br.com.user)" />
+        <module name="microservice (2) (br.com.notification)" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -25,6 +27,8 @@
       <module name="microservice (1) (br.com.gateway)" options="-parameters" />
       <module name="microservice (1) (br.com.notification)" options="-parameters" />
       <module name="microservice (1) (br.com.ticket)" options="-parameters" />
+      <module name="microservice (1) (br.com.user)" options="-parameters" />
+      <module name="microservice (2) (br.com.notification)" options="-parameters" />
       <module name="shared" options="-parameters" />
     </option>
   </component>
