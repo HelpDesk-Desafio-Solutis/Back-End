@@ -35,6 +35,11 @@ public class JwtAuthGatewayFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse res,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
+            filterChain.doFilter(req, res);
+            return;
+        }
+
         // Ignora rotas públicas
         if (req.getServletPath().contains("/auth/login")) {
             filterChain.doFilter(req, res);

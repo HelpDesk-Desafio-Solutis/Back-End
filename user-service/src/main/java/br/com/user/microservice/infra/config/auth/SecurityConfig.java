@@ -1,7 +1,6 @@
 package br.com.user.microservice.infra.config.auth;
 
 import br.com.user.microservice.infra.config.auth.JwtAuthFilter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,19 +14,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    @Value("${web-endpoint.url}")
-    private String webEndpoint;
 
     private final JwtAuthFilter jwtAuthFilter;
 
@@ -41,7 +31,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
 
-                .cors(cors -> {})
+                // CORS desabilitado: este serviço só deve ser acessado
+                // internamente pelo Gateway, nunca diretamente pelo browser.
+                // A checagem de Origin fica centralizada no Gateway.
+                .cors(cors -> cors.disable())
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
@@ -105,35 +98,6 @@ public class SecurityConfig {
         );
 
         return http.build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-
-        CorsConfiguration config = new CorsConfiguration();
-        List<String> allowedOrigins = Arrays.stream(webEndpoint.split(","))
-                .map(String::trim)
-                .filter(origin -> !origin.isEmpty())
-                .toList();
-
-        config.setAllowedOrigins(
-                allowedOrigins
-        );
-
-        config.setAllowCredentials(true);
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.addExposedHeader("Authorization");
-
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration(
-                "/**",
-                config
-        );
-
-        return source;
     }
 
     @Bean

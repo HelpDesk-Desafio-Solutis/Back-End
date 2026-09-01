@@ -50,22 +50,27 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
 
+                        // CORS preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/**")
+                        .permitAll()
+
                         // Rotas públicas
                         .requestMatchers(
-                                "/auth/login",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-resources/**",
-                                "/webjars/**"
+                                "/api/auth/login",
+                                "/api/swagger-ui/**",
+                                "/api/v3/api-docs/**",
+                                "/api/swagger-resources/**",
+                                "/api/webjars/**",
+                                "/error"
                         ).permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/users"
+                        .requestMatchers(HttpMethod.POST, "/api/users"
                         ).permitAll()
 
                         // Criação administrativa de tickets
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/tickets/admin"
+                                "/api/tickets/admin"
                         )
                         .hasAnyRole(
                                 "ADMIN",
@@ -73,11 +78,11 @@ public class SecurityConfig {
                         )
 
                         // Admin
-                        .requestMatchers("/admin/**")
+                        .requestMatchers("/api/admin/**")
                         .hasRole("ADMIN")
 
                         // Usuários autenticados
-                        .requestMatchers("/tickets/**")
+                        .requestMatchers("/api/tickets/**")
                         .hasAnyRole(
                                 "CLIENT",
                                 "ADMIN",
@@ -118,6 +123,7 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        System.out.println(">>> CORS webEndpoint carregado: [" + webEndpoint + "]");
 
         CorsConfiguration config = new CorsConfiguration();
 
@@ -126,8 +132,24 @@ public class SecurityConfig {
         );
 
         config.setAllowCredentials(true);
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+
+        config.setAllowedHeaders(
+                Arrays.asList(
+                        "Authorization",
+                        "Content-Type"
+                )
+        );
+
+        config.setAllowedMethods(
+                Arrays.asList(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"
+                )
+        );
+
         config.addExposedHeader("Authorization");
 
         UrlBasedCorsConfigurationSource source =

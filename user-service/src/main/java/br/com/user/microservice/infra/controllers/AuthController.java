@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,20 @@ public class AuthController {
             @RequestBody UserLoginDto loginDto
     ) {
 
+        try {
+            Authentication auth =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    loginDto.getEmail(),
+                                    loginDto.getPassword()
+                            )
+                    );
+
+        } catch (AuthenticationException e) {
+            System.out.println(">>> Falha no login: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            throw e;
+        }
+
         Authentication auth =
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(
@@ -40,6 +55,7 @@ public class AuthController {
                                 loginDto.getPassword()
                         )
                 );
+
 
         UserDomain user = userGateway.findByEmail(loginDto.getEmail())
                 .orElseThrow();
