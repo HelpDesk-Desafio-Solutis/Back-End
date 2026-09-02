@@ -175,6 +175,19 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  frontend:
+    build:
+      context: ../Front-End/frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8089
+    container_name: helpdesk-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      gateway-service:
+        condition: service_started
+    restart: unless-stopped
 
 volumes:
   mysql_user_data:
