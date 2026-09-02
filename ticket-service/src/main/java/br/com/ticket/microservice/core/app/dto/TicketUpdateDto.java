@@ -16,9 +16,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketUpdateDto {
+    private String description;
+    private Category category;
     private Priority priority;
     private Status status;
-
-    @NotNull(message = "Preencha com o ID do Técnico")
     private UUID technicianUuid;
 }

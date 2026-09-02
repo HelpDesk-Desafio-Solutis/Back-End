@@ -81,13 +81,30 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**")
                         .hasRole("ADMIN")
 
-                        // Usuários autenticados
-                        .requestMatchers("/api/tickets/**")
-                        .hasAnyRole(
-                                "CLIENT",
-                                "ADMIN",
-                                "TECHNICIAN"
-                        )
+                                // Desativação de tickets
+                                .requestMatchers(
+                                        HttpMethod.DELETE,
+                                        "/api/tickets/**"
+                                )
+                                .hasAnyRole(
+                                        "ADMIN",
+                                        "TECHNICIAN"
+                                )
+
+                                 .requestMatchers(
+                                         HttpMethod.GET,
+                                         "/api/tickets/available")
+                                 .hasAnyRole(
+                                         "ADMIN",
+                                         "TECHNICIAN")
+
+                                // Usuários autenticados
+                                .requestMatchers("/api/tickets/**")
+                                .hasAnyRole(
+                                        "CLIENT",
+                                        "ADMIN",
+                                        "TECHNICIAN"
+                                )
 
                         .anyRequest().authenticated()
                 )
@@ -136,7 +153,9 @@ public class SecurityConfig {
         config.setAllowedHeaders(
                 Arrays.asList(
                         "Authorization",
-                        "Content-Type"
+                        "Content-Type",
+                        "X-User-UUID",
+                        "X-User-Role"
                 )
         );
 

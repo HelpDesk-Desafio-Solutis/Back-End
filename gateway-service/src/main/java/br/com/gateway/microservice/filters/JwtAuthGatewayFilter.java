@@ -94,6 +94,7 @@ public class JwtAuthGatewayFilter extends OncePerRequestFilter {
                             .setAuthentication(authToken);
 
                     req.setAttribute("userUuid", userUuid);
+                    req.setAttribute("userRole", normalizedRole);
                 }
             }
 

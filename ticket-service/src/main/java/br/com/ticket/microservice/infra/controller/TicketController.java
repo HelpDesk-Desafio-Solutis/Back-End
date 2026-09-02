@@ -38,6 +38,8 @@ public class TicketController {
     private final DeactivateTicketByIdUseCase deactivateTicketByIdUseCase;
     private final GetAllTicketUseCase getAllTicketUseCase;
     private final GetAllTicketByClientUseCase getAllTicketByClientUseCase;
+    private final GetAllTicketByTechnicianUseCase getAllTicketByTechnicianUseCase;
+    private final GetAllAvailableTicketsUseCase getAllAvailableTicketsUseCase;
     private final GetTicketByIdUseCase getTicketByIdUseCase;
     private final UpdateTicketByIdUseCase updateTicketByIdUseCase;
 
@@ -94,6 +96,19 @@ public class TicketController {
         return ResponseEntity.ok(ticketDtos);
     }
 
+    @GetMapping("/available")
+    @Operation(summary = "Obtém todos os tickets disponíveis.", description = "Retorna todos os tickets com status OPEN que ainda não possuem técnico atribuído.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tickets disponíveis obtidos com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketResponseDto.class), examples = @ExampleObject(value = ErrorResponseExamples.OK))),
+            @ApiResponse(responseCode = "401", description = "Acesso não autorizado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.BAD_REQUEST))),
+            @ApiResponse(responseCode = "403", description = "Acesso proibido.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.FORBIDDEN)))
+    })
+    public ResponseEntity<List<TicketResponseDto>> getAllAvailableTickets(@RequestHeader("Authorization") String authorization) {
+        List<TicketDomain> tickets = getAllAvailableTicketsUseCase.execute(authorization);
+        List<TicketResponseDto> ticketDtos = tickets.stream().map(TicketMapper::toResponseDto).toList();
+        return ResponseEntity.ok(ticketDtos);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Obtém um ticket pelo ID.", description = "Retorna os detalhes de um ticket específico com base no ID fornecido.")
     @ApiResponses(value = {
@@ -116,10 +131,14 @@ public class TicketController {
             @ApiResponse(responseCode = "401", description = "Acesso não autorizado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.BAD_REQUEST))),
             @ApiResponse(responseCode = "403", description = "Acesso proibido.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.FORBIDDEN)))
     })
-    public ResponseEntity<TicketResumedResponseDto> updateTicketById( @RequestHeader("Authorization") String authorization,
-            @Valid @RequestBody TicketUpdateDto updateDto, @PathVariable UUID id) {
+    public ResponseEntity<TicketResumedResponseDto> updateTicketById(
+            @RequestHeader("Authorization") String authorization,
+            @RequestHeader("X-User-UUID") UUID userUuid,
+            @RequestHeader("X-User-Role") String userRole,
+            @Valid @RequestBody TicketUpdateDto updateDto,
+            @PathVariable UUID id) {
         TicketDomain ticket = TicketMapper.toDomain(updateDto);
-        TicketDomain updatedTicket = updateTicketByIdUseCase.execute(ticket, id, authorization);
+        TicketDomain updatedTicket = updateTicketByIdUseCase.execute(ticket, id, authorization, userUuid, userRole);
         return ResponseEntity.ok(TicketMapper.toResumedResponseDto(updatedTicket));
     }
 
@@ -132,8 +151,13 @@ public class TicketController {
             @ApiResponse(responseCode = "401", description = "Acesso não autorizado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.BAD_REQUEST))),
             @ApiResponse(responseCode = "403", description = "Acesso proibido.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.FORBIDDEN)))
     })
-    public void deactivateTicketById(@PathVariable UUID id) {
+    public ResponseEntity<Void> deactivateTicketById(@RequestHeader("X-User-Role") String userRole, @PathVariable UUID id) {
+        if (!"ADMIN".equalsIgnoreCase(userRole)
+                && !"TECHNICIAN".equalsIgnoreCase(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         deactivateTicketByIdUseCase.execute(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/client/{id}")
@@ -144,8 +168,22 @@ public class TicketController {
             @ApiResponse(responseCode = "401", description = "Acesso não autorizado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.BAD_REQUEST))),
             @ApiResponse(responseCode = "403", description = "Acesso proibido.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.FORBIDDEN)))
     })
-    public ResponseEntity<List<TicketResponseDto>> getAllTicketByClient(@PathVariable UUID id) {
-        List<TicketDomain> tickets = getAllTicketByClientUseCase.execute(id);
+    public ResponseEntity<List<TicketResponseDto>> getAllTicketByClient(@RequestHeader("Authorization") String authorization, @PathVariable UUID id) {
+        List<TicketDomain> tickets = getAllTicketByClientUseCase.execute(id, authorization);
+        List<TicketResponseDto> ticketDtos = tickets.stream().map(TicketMapper::toResponseDto).toList();
+        return ResponseEntity.ok(ticketDtos);
+    }
+
+    @GetMapping("/technician/{id}")
+    @Operation(summary = "Obtém todos os tickets de um técnico.", description = "Retorna uma lista de tickets associados a um técnico específico com base no ID fornecido.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tickets obtidos com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketResponseDto.class), examples = @ExampleObject(value = ErrorResponseExamples.OK))),
+            @ApiResponse(responseCode = "404", description = "Técnico não encontrado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.NOT_FOUND))),
+            @ApiResponse(responseCode = "401", description = "Acesso não autorizado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.BAD_REQUEST))),
+            @ApiResponse(responseCode = "403", description = "Acesso proibido.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.FORBIDDEN)))
+    })
+    public ResponseEntity<List<TicketResponseDto>> getAllTicketByTechnician(@RequestHeader("Authorization") String authorization, @PathVariable UUID id) {
+        List<TicketDomain> tickets = getAllTicketByTechnicianUseCase.execute(id, authorization);
         List<TicketResponseDto> ticketDtos = tickets.stream().map(TicketMapper::toResponseDto).toList();
         return ResponseEntity.ok(ticketDtos);
     }

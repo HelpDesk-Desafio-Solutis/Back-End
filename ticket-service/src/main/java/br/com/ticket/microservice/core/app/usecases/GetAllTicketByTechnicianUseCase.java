@@ -7,12 +7,12 @@ import br.com.ticket.microservice.core.gateway.UserGateway;
 import java.util.List;
 import java.util.UUID;
 
-public class GetAllTicketByClientUseCase {
+public class GetAllTicketByTechnicianUseCase {
 
     private final TicketGateway gateway;
     private final UserGateway userGateway;
 
-    public GetAllTicketByClientUseCase(
+    public GetAllTicketByTechnicianUseCase(
             TicketGateway gateway,
             UserGateway userGateway) {
 
@@ -20,10 +20,12 @@ public class GetAllTicketByClientUseCase {
         this.userGateway = userGateway;
     }
 
-    public List<TicketDomain> execute(UUID uuid, String authorization) {
+    public List<TicketDomain> execute(
+            UUID uuid,
+            String authorization) {
 
         List<TicketDomain> tickets =
-                gateway.findAllByClientId(uuid);
+                gateway.findAllByTechnicianId(uuid);
 
         tickets.forEach(ticket -> enrich(ticket, authorization));
 

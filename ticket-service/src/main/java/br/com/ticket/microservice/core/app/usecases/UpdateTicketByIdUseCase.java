@@ -18,17 +18,20 @@ public class UpdateTicketByIdUseCase {
     private final UserGateway userGateway;
     private final NotificationGateway notificationGateway;
 
-    public UpdateTicketByIdUseCase(
-            TicketGateway ticketGateway,
-            UserGateway userGateway,
-            NotificationGateway notificationGateway
-    ) {
+    public UpdateTicketByIdUseCase(TicketGateway ticketGateway, UserGateway userGateway, NotificationGateway notificationGateway) {
         this.ticketGateway = ticketGateway;
         this.userGateway = userGateway;
         this.notificationGateway = notificationGateway;
     }
 
-    public TicketDomain execute(TicketDomain ticket, UUID uuid, String authorization) {
+    public TicketDomain execute(TicketDomain ticket, UUID uuid, String authorization, UUID userUuid, String userRole) {
+        if (!"ADMIN".equalsIgnoreCase(userRole)
+                && !"TECHNICIAN".equalsIgnoreCase(userRole)) {
+            throw new SecurityException(
+                    "Usuário não possui permissão para editar tickets."
+            );
+        }
+
         TicketDomain existingTicket = ticketGateway.findById(uuid)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "O ticket com o ID " + uuid + " não foi encontrado."
@@ -37,7 +40,8 @@ public class UpdateTicketByIdUseCase {
         Status oldStatus = existingTicket.getStatus();
 
         UserDomain existingClient = userGateway.findById(
-                        existingTicket.getClientDomain().getUuid(), authorization
+                        existingTicket.getClientDomain().getUuid(),
+                        authorization
                 )
                 .orElseThrow(() -> new RelatedEntityNotFoundException(
                         "Cliente não encontrado."
@@ -45,10 +49,34 @@ public class UpdateTicketByIdUseCase {
 
         UserDomain existingTechnician = null;
 
-        if(existingTicket.getTechnicianDomain() != null
-                && existingTicket.getTechnicianDomain().getUuid() != null){
+        if (existingTicket.getTechnicianDomain() != null
+                && existingTicket.getTechnicianDomain().getUuid() != null) {
             existingTechnician = userGateway.findById(
-                            existingTicket.getTechnicianDomain().getUuid(), authorization
+                            existingTicket.getTechnicianDomain().getUuid(),
+                            authorization
+                    )
+                    .orElseThrow(() -> new RelatedEntityNotFoundException(
+                            "Técnico não encontrado."
+                    ));
+        }
+
+        if ("TECHNICIAN".equalsIgnoreCase(userRole)) {
+            existingTechnician = userGateway.findById(
+                            userUuid,
+                            authorization
+                    )
+                    .orElseThrow(() -> new RelatedEntityNotFoundException(
+                            "Técnico não encontrado."
+                    ));
+        }
+
+        if ("ADMIN".equalsIgnoreCase(userRole)
+                && ticket.getTechnicianDomain() != null
+                && ticket.getTechnicianDomain().getUuid() != null) {
+
+            existingTechnician = userGateway.findById(
+                            ticket.getTechnicianDomain().getUuid(),
+                            authorization
                     )
                     .orElseThrow(() -> new RelatedEntityNotFoundException(
                             "Técnico não encontrado."
@@ -69,8 +97,11 @@ public class UpdateTicketByIdUseCase {
         saved.setClientDomain(existingClient);
         saved.setTechnicianDomain(existingTechnician);
 
-        if(oldStatus != saved.getStatus()){
-            notificationGateway.sendTicketStatusChanged(saved, oldStatus);
+        if (oldStatus != saved.getStatus()) {
+            notificationGateway.sendTicketStatusChanged(
+                    saved,
+                    oldStatus
+            );
         }
 
         return saved;

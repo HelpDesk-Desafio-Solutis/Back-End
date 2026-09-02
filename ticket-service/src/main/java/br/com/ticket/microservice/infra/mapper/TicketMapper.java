@@ -67,9 +67,14 @@ public class TicketMapper {
 
         TicketDomain ticket = new TicketDomain();
 
+        ticket.setDescription(updateDto.getDescription());
+        ticket.setCategory(updateDto.getCategory());
         ticket.setStatus(updateDto.getStatus());
         ticket.setPriority(updateDto.getPriority());
-        ticket.setTechnicianDomain(new UserDomain(updateDto.getTechnicianUuid()));
+
+        if (updateDto.getTechnicianUuid() != null) {
+            ticket.setTechnicianDomain(new UserDomain(updateDto.getTechnicianUuid()));
+        }
 
         return ticket;
     }

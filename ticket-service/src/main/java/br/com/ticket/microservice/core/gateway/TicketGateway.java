@@ -23,5 +23,6 @@ public interface TicketGateway {
     List<TicketDomain> findAll(Status status);
     List<TicketDomain> findAllByTechnicianId(UUID technicianId);
     List<TicketDomain> findAllByClientId(UUID clientId);
+    List<TicketDomain> findAllAvailable();
 
 }

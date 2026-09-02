@@ -119,4 +119,11 @@ public class TicketAdapter implements TicketGateway {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<TicketDomain> findAllAvailable() {
+        return repository.findAllByStatusAndTechnicianUuidIsNull(Status.OPEN).stream()
+                .map(TicketMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
 }

@@ -23,9 +23,5 @@ public interface JpaTicketRepository extends JpaRepository<TicketJpaEntity, UUID
     List<TicketJpaEntity> findAllByClientUuid(UUID clientUuid);
     List<TicketJpaEntity> findAllByTechnicianUuid(UUID technicianUuid);
     List<TicketJpaEntity> findAllByStatus(Status status);
-    Page<TicketJpaEntity> findAllByCategory(Category category, Pageable pageable);
-    Page<TicketJpaEntity> findAllByPriority(Priority priority, Pageable pageable);
-    Page<TicketJpaEntity> findAllByClientUuidAndStatus(UUID clientUuid, Status status, Pageable pageable);
-    Page<TicketJpaEntity> findAllByTechnicianUuidAndStatus(UUID technicianUuid, Status status, Pageable pageable);
-
+    List<TicketJpaEntity> findAllByStatusAndTechnicianUuidIsNull(Status status);
 }

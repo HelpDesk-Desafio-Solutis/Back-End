@@ -32,8 +32,13 @@ public class TicketConfig {
     }
 
     @Bean
-    public GetAllTicketByClientUseCase getAllTicketByClientUseCase(TicketGateway ticketGateway) {
-        return new GetAllTicketByClientUseCase(ticketGateway);
+    public GetAllTicketByClientUseCase getAllTicketByClientUseCase(TicketGateway ticketGateway, UserGateway userGateway) {
+        return new GetAllTicketByClientUseCase(ticketGateway, userGateway);
+    }
+
+    @Bean
+    public GetAllTicketByTechnicianUseCase getAllTicketByTechnicianUseCase(TicketGateway ticketGateway, UserGateway userGateway) {
+        return new GetAllTicketByTechnicianUseCase(ticketGateway, userGateway);
     }
 
     @Bean
@@ -44,6 +49,11 @@ public class TicketConfig {
     @Bean
     public GetTicketByIdUseCase getTicketByIdUseCase(TicketGateway ticketGateway, UserGateway userGateway) {
         return new GetTicketByIdUseCase(ticketGateway, userGateway);
+    }
+
+    @Bean
+    public GetAllAvailableTicketsUseCase getAllAvailableTicketsUseCase(TicketGateway ticketGateway, UserGateway userGateway) {
+        return new GetAllAvailableTicketsUseCase(ticketGateway, userGateway);
     }
 
     @Bean

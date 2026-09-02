@@ -2,6 +2,7 @@ package br.com.ticket.microservice.core.app.usecases;
 
 import br.com.ticket.microservice.core.domain.TicketDomain;
 import br.com.ticket.microservice.core.gateway.TicketGateway;
+import br.com.ticket.microservice.core.gateway.UserGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,11 +21,14 @@ class GetAllTicketByClientUseCaseTest {
     @Mock
     private TicketGateway gateway;
 
+    @Mock
+    private UserGateway userGateway;
+
     private GetAllTicketByClientUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new GetAllTicketByClientUseCase(gateway);
+        useCase = new GetAllTicketByClientUseCase(gateway, userGateway);
     }
 
     @Test
@@ -40,7 +44,7 @@ class GetAllTicketByClientUseCaseTest {
         when(gateway.findAllByClientId(clientId))
                 .thenReturn(tickets);
 
-        List<TicketDomain> result = useCase.execute(clientId);
+        List<TicketDomain> result = useCase.execute(clientId, null);
 
         assertEquals(tickets, result);
 

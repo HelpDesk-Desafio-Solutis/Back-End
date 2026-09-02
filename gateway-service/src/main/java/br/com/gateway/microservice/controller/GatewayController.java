@@ -65,13 +65,48 @@ public class GatewayController {
                 .headers(httpHeaders -> {
                     headers.forEach((key, values) -> {
                         String lowerKey = key.toLowerCase();
+
                         if (!lowerKey.equals("host")
                                 && !lowerKey.equals("content-length")
                                 && !lowerKey.equals("connection")
-                                && !lowerKey.equals("origin")) {
+                                && !lowerKey.equals("origin")
+                                && !lowerKey.equals("x-user-uuid")
+                                && !lowerKey.equals("x-user-role")) {
+
                             httpHeaders.put(key, values);
                         }
                     });
+
+                    Object userUuid = request.getAttribute("userUuid");
+
+                    if (userUuid != null) {
+                        httpHeaders.set(
+                                "X-User-UUID",
+                                userUuid.toString()
+                        );
+                    }
+
+                    var authentication =
+                            org.springframework.security.core.context.SecurityContextHolder
+                                    .getContext()
+                                    .getAuthentication();
+
+                    if (authentication != null) {
+                        authentication.getAuthorities()
+                                .stream()
+                                .findFirst()
+                                .ifPresent(authority -> {
+
+                                    String role = authority
+                                            .getAuthority()
+                                            .replaceFirst("^ROLE_", "");
+
+                                    httpHeaders.set(
+                                            "X-User-Role",
+                                            role
+                                    );
+                                });
+                    }
                 })
                 .body(
                         body == null ? Mono.empty() : Mono.just(body),
