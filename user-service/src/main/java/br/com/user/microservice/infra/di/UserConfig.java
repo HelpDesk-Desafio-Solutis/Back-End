@@ -30,8 +30,8 @@ public class UserConfig {
     }
 
     @Bean
-    public UpdateUserByIdUseCase updateUserByIdUseCase(UserGateway gateway) {
-        return new UpdateUserByIdUseCase(gateway);
+    public UpdateUserByIdUseCase updateUserByIdUseCase(UserGateway gateway, PasswordEncoderGateway encoderGateway) {
+        return new UpdateUserByIdUseCase(gateway, encoderGateway);
     }
 
     @Bean
