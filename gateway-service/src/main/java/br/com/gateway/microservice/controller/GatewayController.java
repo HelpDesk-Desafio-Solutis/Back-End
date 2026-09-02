@@ -31,7 +31,7 @@ public class GatewayController {
             "/{service}",
             "/{service}/{path:^(?!api).*$}/**"
     })
-    public Mono<ResponseEntity<String>> proxy(
+    public ResponseEntity<String> proxy(
             @PathVariable String service,
             @PathVariable(required = false) String path,
             @RequestHeader HttpHeaders headers,
@@ -40,7 +40,6 @@ public class GatewayController {
             @RequestBody(required = false) String body,
             HttpServletRequest request
     ) {
-
         String baseUrl = switch (service) {
             case "notifications" -> notificationServiceUrl;
             case "tickets" -> ticketServiceUrl;
@@ -52,11 +51,9 @@ public class GatewayController {
         System.out.println("URL recebida: " + baseUrl);
 
         if (baseUrl == null) {
-            return Mono.just(
-                    ResponseEntity
-                            .status(HttpStatus.BAD_REQUEST)
-                            .body("Serviço não encontrado")
-            );
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Serviço não encontrado");
         }
 
         String fullPath = request.getRequestURI()
@@ -70,7 +67,8 @@ public class GatewayController {
                         String lowerKey = key.toLowerCase();
                         if (!lowerKey.equals("host")
                                 && !lowerKey.equals("content-length")
-                                && !lowerKey.equals("connection")) {
+                                && !lowerKey.equals("connection")
+                                && !lowerKey.equals("origin")) {
                             httpHeaders.put(key, values);
                         }
                     });
@@ -80,16 +78,13 @@ public class GatewayController {
                         String.class
                 )
                 .exchangeToMono(response -> {
-
                     HttpStatusCode status = response.statusCode();
 
                     return response
                             .bodyToMono(String.class)
                             .defaultIfEmpty("")
                             .map(responseBody -> {
-
-                                HttpHeaders responseHeaders =
-                                        new HttpHeaders();
+                                HttpHeaders responseHeaders = new HttpHeaders();
 
                                 response.headers()
                                         .asHttpHeaders()
@@ -107,6 +102,7 @@ public class GatewayController {
                                         .headers(responseHeaders)
                                         .body(responseBody);
                             });
-                });
+                })
+                .block();
     }
 }

@@ -3,6 +3,7 @@ package br.com.ticket.microservice.core.app.usecases;
 import br.com.ticket.microservice.core.domain.TicketDomain;
 import br.com.ticket.microservice.core.enums.Status;
 import br.com.ticket.microservice.core.gateway.TicketGateway;
+import br.com.ticket.microservice.core.gateway.UserGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,11 +21,14 @@ class GetAllTicketUseCaseTest {
     @Mock
     private TicketGateway gateway;
 
+    @Mock
+    private UserGateway userGateway;
+
     private GetAllTicketUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new GetAllTicketUseCase(gateway);
+        useCase = new GetAllTicketUseCase(gateway, userGateway);
     }
 
     @Test

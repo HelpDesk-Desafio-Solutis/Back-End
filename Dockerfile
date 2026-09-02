@@ -14,10 +14,10 @@ COPY gateway-service/ gateway-service/
 
 # Compila
 RUN chmod +x mvnw
-RUN ./mvnw clean install -DskipTests -pl shared
-RUN ./mvnw clean install -DskipTests -pl user-service
-RUN ./mvnw clean install -DskipTests -pl ticket-service
-RUN ./mvnw clean package -DskipTests -pl notification-service
+RUN ./mvnw clean install -Dmaven.test.skip=true -pl shared
+RUN ./mvnw clean install -Dmaven.test.skip=true -pl user-service
+RUN ./mvnw clean install -Dmaven.test.skip=true -pl ticket-service
+RUN ./mvnw clean package -Dmaven.test.skip=true -pl notification-service
 RUN ./mvnw clean package -DskipTests -pl gateway-service
 
 # Container

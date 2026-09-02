@@ -28,8 +28,21 @@ public class JwtService {
             }
 
             Claims claims = extractAllClaims(token);
+
+            System.out.println("JWT validado com sucesso");
+            System.out.println("Subject: " + claims.getSubject());
+            System.out.println("Role: " + claims.get("role"));
+            System.out.println("UUID: " + claims.get("uuid"));
+            System.out.println("Expiration: " + claims.getExpiration());
+
             return !claims.getExpiration().before(new Date());
+
         } catch (Exception e) {
+            System.err.println("========== ERRO JWT ==========");
+            System.err.println("Tipo: " + e.getClass().getName());
+            System.err.println("Mensagem: " + e.getMessage());
+            System.err.println("==============================");
+
             return false;
         }
     }

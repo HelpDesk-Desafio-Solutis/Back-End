@@ -122,7 +122,11 @@ public class TicketMapper {
         ticket.setPriority(jpa.getPriority());
 
         ticket.setClientDomain(new UserDomain(jpa.getClientUuid()));
-        ticket.setTechnicianDomain(new UserDomain(jpa.getTechnicianUuid()));
+        ticket.setTechnicianDomain(
+                jpa.getTechnicianUuid() != null
+                        ? new UserDomain(jpa.getTechnicianUuid())
+                        : null
+        );
 
         ticket.setCreatedAt(jpa.getCreatedAt());
         ticket.setUpdatedAt(jpa.getUpdatedAt());

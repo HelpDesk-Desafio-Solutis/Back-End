@@ -30,10 +30,6 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-
-                // CORS desabilitado: este serviço só deve ser acessado
-                // internamente pelo Gateway, nunca diretamente pelo browser.
-                // A checagem de Origin fica centralizada no Gateway.
                 .cors(cors -> cors.disable())
 
                 .sessionManagement(session ->
@@ -43,6 +39,9 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(authorize -> authorize
+
+                        .requestMatchers(HttpMethod.OPTIONS, "/**")
+                        .permitAll()
 
                         // Rotas públicas
                         .requestMatchers(

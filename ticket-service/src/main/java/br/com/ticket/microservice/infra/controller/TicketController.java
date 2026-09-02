@@ -77,8 +77,9 @@ public class TicketController {
             @ApiResponse(responseCode = "403", description = "Acesso proibido.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseExamples.class), examples = @ExampleObject(value = ErrorResponseExamples.FORBIDDEN)))
     })
     public ResponseEntity<List<TicketResponseDto>> getAllTickets(
+            @RequestHeader("Authorization") String authorization,
             @RequestParam(required = false) Status status) {
-        logger.info("getAllSchedules called with status: {}", status);
+
         Status statusEnum = null;
         if (status != null && !status.toString().isEmpty() && !status.toString().equalsIgnoreCase("TODOS")) {
             try {
@@ -88,9 +89,7 @@ public class TicketController {
             }
         }
 
-        logger.info("GetAllTickets called with status: {}", statusEnum);
-
-        List<TicketDomain> tickets = getAllTicketUseCase.execute(statusEnum);
+        List<TicketDomain> tickets = getAllTicketUseCase.execute(statusEnum, authorization);
         List<TicketResponseDto> ticketDtos = tickets.stream().map(TicketMapper::toResponseDto).toList();
         return ResponseEntity.ok(ticketDtos);
     }

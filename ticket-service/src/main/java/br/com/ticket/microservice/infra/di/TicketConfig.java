@@ -27,8 +27,8 @@ public class TicketConfig {
     }
 
     @Bean
-    public GetAllTicketUseCase getAllTicketUseCase(TicketGateway ticketGateway) {
-        return new GetAllTicketUseCase(ticketGateway);
+    public GetAllTicketUseCase getAllTicketUseCase(TicketGateway ticketGateway, UserGateway userGateway) {
+        return new GetAllTicketUseCase(ticketGateway, userGateway);
     }
 
     @Bean

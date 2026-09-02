@@ -57,10 +57,10 @@ public class SecurityConfig {
                         // Rotas públicas
                         .requestMatchers(
                                 "/api/auth/login",
-                                "/api/swagger-ui/**",
-                                "/api/v3/api-docs/**",
-                                "/api/swagger-resources/**",
-                                "/api/webjars/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
                                 "/error"
                         ).permitAll()
 
