@@ -19,15 +19,13 @@ public class DeactivateUserUseCase {
     public void execute(UUID uuid) {
         if (!gateway.existsById(uuid)) {
             throw new EntityNotFoundException(
-                    //TODO: Adicionar audit action aqui
-                    "placeholder"
+                    "Usuário com ID %s não encontrado".formatted(uuid)
             );
         }
 
         if (gateway.existsByIdAndActiveFalse(uuid)) {
             throw new InactiveEntityException(
-                    //TODO: Adicionar audit action aqui
-                    "placeholder"
+                    "Usuário com ID %s já está inativo".formatted(uuid)
             );
         }
 

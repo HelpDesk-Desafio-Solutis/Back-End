@@ -6,6 +6,7 @@ import br.com.notification.microservice.infra.mapper.NotificationMapper;
 import br.com.notification.microservice.infra.persistence.entity.NotificationJpaEntity;
 import br.com.notification.microservice.infra.persistence.repo.JpaNotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class NotificationAdapter implements NotificationGateway {
+
+    private static final int DEFAULT_LIMIT = 50;
 
     private final JpaNotificationRepository repository;
 
@@ -42,7 +45,9 @@ public class NotificationAdapter implements NotificationGateway {
 
     @Override
     public List<NotificationDomain> findAll() {
-        return repository.findAll().stream()
+        return repository
+                .findAllByOrderByCreatedAtDesc(PageRequest.of(0, DEFAULT_LIMIT))
+                .stream()
                 .map(NotificationMapper::toDomain)
                 .toList();
     }
