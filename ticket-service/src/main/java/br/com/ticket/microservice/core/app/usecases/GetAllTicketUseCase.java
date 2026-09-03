@@ -38,15 +38,6 @@ public class GetAllTicketUseCase {
             ).ifPresent(ticket::setClientDomain);
         }
 
-        if (ticket.getClientDomain() != null &&
-                ticket.getClientDomain().getUuid() != null) {
-
-            userGateway.findById(
-                    ticket.getClientDomain().getUuid(),
-                    authorization
-            ).ifPresent(ticket::setClientDomain);
-        }
-
         if (ticket.getTechnicianDomain() != null &&
                 ticket.getTechnicianDomain().getUuid() != null) {
 

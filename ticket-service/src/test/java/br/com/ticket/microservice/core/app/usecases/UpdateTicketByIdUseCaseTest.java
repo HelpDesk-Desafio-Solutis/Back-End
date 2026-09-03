@@ -39,6 +39,9 @@ class UpdateTicketByIdUseCaseTest {
     private UUID ticketUuid;
     private UUID clientUuid;
     private UUID technicianUuid;
+    private UUID userUuid;
+
+    private String userRole;
 
     private TicketDomain existingTicket;
     private TicketDomain updatedTicket;
@@ -52,6 +55,9 @@ class UpdateTicketByIdUseCaseTest {
         ticketUuid = UUID.randomUUID();
         clientUuid = UUID.randomUUID();
         technicianUuid = UUID.randomUUID();
+        userUuid = UUID.randomUUID();
+
+        userRole = "ADMIN";
 
         client = new UserDomain();
         client.setUuid(clientUuid);
@@ -97,7 +103,9 @@ class UpdateTicketByIdUseCaseTest {
                 useCase.execute(
                         updatedTicket,
                         ticketUuid,
-                        authorization
+                        authorization,
+                        userUuid,
+                        userRole
                 );
 
         assertNotNull(result);
@@ -145,7 +153,9 @@ class UpdateTicketByIdUseCaseTest {
                 () -> useCase.execute(
                         updatedTicket,
                         ticketUuid,
-                        authorization
+                        authorization,
+                        userUuid,
+                        userRole
                 )
         );
 
@@ -172,7 +182,9 @@ class UpdateTicketByIdUseCaseTest {
                 () -> useCase.execute(
                         updatedTicket,
                         ticketUuid,
-                        authorization
+                        authorization,
+                        userUuid,
+                        userRole
                 )
         );
 
@@ -210,7 +222,9 @@ class UpdateTicketByIdUseCaseTest {
                 () -> useCase.execute(
                         updatedTicket,
                         ticketUuid,
-                        authorization
+                        authorization,
+                        userUuid,
+                        userRole
                 )
         );
 
@@ -248,7 +262,9 @@ class UpdateTicketByIdUseCaseTest {
         useCase.execute(
                 updatedTicket,
                 ticketUuid,
-                authorization
+                authorization,
+                userUuid,
+                userRole
         );
 
         verify(notificationGateway)

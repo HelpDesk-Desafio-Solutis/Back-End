@@ -1,5 +1,6 @@
 package br.com.user.microservice.infra.controllers;
 
+import br.com.shared.gateway.PasswordEncoderGateway;
 import br.com.user.microservice.core.app.dto.user.UserRequestDto;
 import br.com.user.microservice.core.app.usecases.*;
 import br.com.user.microservice.core.domain.UserDomain;
@@ -7,6 +8,7 @@ import br.com.user.microservice.core.enums.Role;
 import br.com.user.microservice.infra.config.auth.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -60,6 +62,9 @@ class UserControllerTest {
 
     @MockitoBean
     private UserDetailsService userDetailsService;
+
+    @Mock
+    private PasswordEncoderGateway encoderGateway;
 
     @MockitoBean
     private JwtService jwtService;

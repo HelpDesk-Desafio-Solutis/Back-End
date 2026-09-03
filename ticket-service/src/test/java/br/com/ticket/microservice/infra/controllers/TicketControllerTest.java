@@ -1,12 +1,6 @@
 package br.com.ticket.microservice.infra.controllers;
 
-import br.com.ticket.microservice.core.app.usecases.CreateTicketAdminUseCase;
-import br.com.ticket.microservice.core.app.usecases.CreateTicketUseCase;
-import br.com.ticket.microservice.core.app.usecases.DeactivateTicketByIdUseCase;
-import br.com.ticket.microservice.core.app.usecases.GetAllTicketByClientUseCase;
-import br.com.ticket.microservice.core.app.usecases.GetAllTicketUseCase;
-import br.com.ticket.microservice.core.app.usecases.GetTicketByIdUseCase;
-import br.com.ticket.microservice.core.app.usecases.UpdateTicketByIdUseCase;
+import br.com.ticket.microservice.core.app.usecases.*;
 import br.com.ticket.microservice.core.domain.TicketDomain;
 import br.com.ticket.microservice.core.enums.Status;
 import br.com.ticket.microservice.infra.controller.TicketController;
@@ -38,6 +32,7 @@ class TicketControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+
     @MockitoBean
     private CreateTicketUseCase createTicketUseCase;
 
@@ -52,6 +47,12 @@ class TicketControllerTest {
 
     @MockitoBean
     private GetAllTicketByClientUseCase getAllTicketByClientUseCase;
+
+    @MockitoBean
+    private GetAllTicketByTechnicianUseCase getAllTicketByTechnicianUseCase;
+
+    @MockitoBean
+    private GetAllAvailableTicketsUseCase getAllAvailableTicketsUseCase;
 
     @MockitoBean
     private GetTicketByIdUseCase getTicketByIdUseCase;
@@ -145,33 +146,39 @@ class TicketControllerTest {
     @Test
     void shouldGetAllTickets() throws Exception {
 
-        when(getAllTicketUseCase.execute(Status.OPEN))
-                .thenReturn(List.of());
+        when(getAllTicketUseCase.execute(
+                eq(Status.OPEN),
+                eq("Bearer token")
+        )).thenReturn(List.of());
 
         mockMvc.perform(
                         get("/tickets")
                                 .param("status", "OPEN")
+                                .header("Authorization", "Bearer token")
                 )
                 .andExpect(status().isOk());
 
         verify(getAllTicketUseCase)
-                .execute(Status.OPEN);
+                .execute(Status.OPEN, "Bearer token");
     }
 
 
     @Test
     void shouldGetAllTicketsWithoutStatus() throws Exception {
 
-        when(getAllTicketUseCase.execute((Status) null))
-                .thenReturn(List.of());
+        when(getAllTicketUseCase.execute(
+                isNull(),
+                eq("Bearer token")
+        )).thenReturn(List.of());
 
         mockMvc.perform(
                         get("/tickets")
+                                .header("Authorization", "Bearer token")
                 )
                 .andExpect(status().isOk());
 
         verify(getAllTicketUseCase)
-                .execute((Status) null);
+                .execute(null, "Bearer token");
     }
 
 
@@ -204,27 +211,35 @@ class TicketControllerTest {
 
         UUID id = UUID.randomUUID();
         UUID technicianUuid = UUID.randomUUID();
+        UUID userUuid = UUID.randomUUID();
+
+        String authorization = "Bearer token";
+        String userRole = "TECHNICIAN";
 
         TicketDomain ticket = new TicketDomain();
 
         when(updateTicketByIdUseCase.execute(
                 any(TicketDomain.class),
                 eq(id),
-                eq("Bearer token")
+                eq(authorization),
+                eq(userUuid),
+                eq(userRole)
         )).thenReturn(ticket);
 
         String json = """
-            {
-                "title": "Título atualizado",
-                "description": "Descrição atualizada",
-                "technicianUuid": "%s"
-            }
-            """.formatted(technicianUuid);
+        {
+            "title": "Título atualizado",
+            "description": "Descrição atualizada",
+            "technicianUuid": "%s"
+        }
+        """.formatted(technicianUuid);
 
         mockMvc.perform(
                         put("/tickets/{id}", id)
                                 .with(csrf())
-                                .header("Authorization", "Bearer token")
+                                .header("Authorization", authorization)
+                                .header("X-User-UUID", userUuid)
+                                .header("X-User-Role", userRole)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json)
                 )
@@ -234,11 +249,14 @@ class TicketControllerTest {
                 .execute(
                         any(TicketDomain.class),
                         eq(id),
-                        eq("Bearer token")
+                        eq(authorization),
+                        eq(userUuid),
+                        eq(userRole)
                 );
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     void shouldDeactivateTicket() throws Exception {
 
         UUID id = UUID.randomUUID();
@@ -251,6 +269,7 @@ class TicketControllerTest {
                         delete("/tickets/{id}", id)
                                 .with(csrf())
                                 .header("Authorization", "Bearer token")
+                                .header("X-User-Role", "ADMIN")
                 )
                 .andExpect(status().isNoContent());
 
@@ -264,8 +283,10 @@ class TicketControllerTest {
 
         UUID clientId = UUID.randomUUID();
 
-        when(getAllTicketByClientUseCase.execute(clientId))
-                .thenReturn(List.of());
+        when(getAllTicketByClientUseCase.execute(
+                clientId,
+                "Bearer token"
+        )).thenReturn(List.of());
 
         mockMvc.perform(
                         get("/tickets/client/{id}", clientId)
@@ -274,6 +295,6 @@ class TicketControllerTest {
                 .andExpect(status().isOk());
 
         verify(getAllTicketByClientUseCase)
-                .execute(clientId);
+                .execute(clientId, "Bearer token");
     }
 }

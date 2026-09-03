@@ -1,5 +1,6 @@
 package br.com.user.microservice.core.app.usecases;
 
+import br.com.shared.gateway.PasswordEncoderGateway;
 import br.com.user.microservice.core.domain.UserDomain;
 import br.com.user.microservice.core.enums.Role;
 import br.com.user.microservice.core.gateway.UserGateway;
@@ -21,6 +22,9 @@ class UpdateUserByIdUseCaseTest {
 
     @Mock
     private UserGateway gateway;
+
+    @Mock
+    private PasswordEncoderGateway encoderGateway;
 
     @InjectMocks
     private UpdateUserByIdUseCase useCase;
@@ -66,6 +70,9 @@ class UpdateUserByIdUseCaseTest {
         when(gateway.findById(uuid))
                 .thenReturn(Optional.of(existingUser));
 
+        when(encoderGateway.encode("123456"))
+                .thenReturn("senha-criptografada");
+
         when(gateway.save(any(UserDomain.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -74,27 +81,42 @@ class UpdateUserByIdUseCaseTest {
 
         assertNotNull(result);
         assertEquals(uuid, result.getUuid());
+
         assertEquals(
                 "João Atualizado",
                 result.getName()
         );
+
         assertEquals(
                 "joao.atualizado@email.com",
                 result.getEmail()
         );
+
+        assertEquals(
+                "senha-criptografada",
+                result.getPassword()
+        );
+
         assertEquals(
                 existingUser.getCreatedAt(),
                 result.getCreatedAt()
         );
+
         assertNotNull(result.getUpdatedAt());
 
         verify(gateway).existsById(uuid);
+
         verify(gateway).existsByIdAndActiveFalse(uuid);
+
         verify(gateway).existsByIdNotAndEmailIgnoreCase(
                 uuid,
                 userToUpdate.getEmail()
         );
+
         verify(gateway).findById(uuid);
+
+        verify(encoderGateway).encode("123456");
+
         verify(gateway).save(userToUpdate);
     }
 }
